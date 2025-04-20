@@ -7,6 +7,7 @@ module.exports = {
         'static/register/script': './static/register/script.ts',
         'static/dashboard/script': './static/dashboard/script.ts',
         'static/home/script': './static/home/script.ts',
+        'static/life/script': './static/life/script.ts'
     },
     output: {
         filename: '[name].js',

@@ -44,7 +44,7 @@ class AuthProvider:
         '''
         payload = {
             "username": userData['username'],
-            "id": userData['id'],
+            "id": userData['id'], # Database entry ID
             'exp': datetime.datetime.utcnow() + TOKEN_EXPIRY_TIME
         }
         print(f"User: {payload["username"]}")
@@ -79,7 +79,6 @@ class AuthProvider:
                     print("Already has public and private keys")
                     return
             key = RSA.generate(2048)
-            public_key = key.publickey()
 
             private_key = key.export_key()
             public_key_bytes: bytes = key.publickey().export_key()
@@ -115,7 +114,7 @@ class AuthProvider:
 
     def auth(self, username: str, password: str, transfer: bool) -> tuple[HTTPRequestResponseDict, str|None]:
         '''
-        Authenticates user and creates token
+        Authenticates user and creates token. Login.
         '''
         try:
             print("AUTH")

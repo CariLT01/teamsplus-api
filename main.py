@@ -24,6 +24,8 @@ themeManager = ThemesManager(db_provider)
 encryptionProvider = EncryptionProvider(db_provider)
 CORS(app, origins=["https://teams.microsoft.com"]) # Fix CORS issue during development
 
+
+
 # Compare types
 
 class ThemeData_FontsDictType(BaseModel):
