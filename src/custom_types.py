@@ -1,5 +1,6 @@
 
-from typing import TypedDict
+from typing import TypedDict, NotRequired
+from typing import Any
 
 class AuthenticationDataReturnType(TypedDict):
     id: int
@@ -8,8 +9,8 @@ class AuthenticationDataReturnType(TypedDict):
     ownedThemes: str
     password: str
     publicKey: str
-    privateKey: str
-    iv: str
+    privateKey: bytes
+    iv: str|None
 
 class ThemeDataReturnType(TypedDict):
     id: int
@@ -43,8 +44,30 @@ class TDThemeDataDict(TypedDict):
 
 ## Auth provider
 
-class AuthProviderResultDict(TypedDict):
+class HTTPRequestResponseDict(TypedDict):
     success: bool
     message: str
     httpStatus: int
-    data: str | None
+    data: NotRequired[Any]
+
+
+class EncryptionProviderDataDict(TypedDict):
+    body: str
+    iv: str
+    signature: str
+    keys: dict[int, str]  # keys for each user ID
+    author: int  # ID of the author of the message
+
+class EncryptionProviderResultDict(TypedDict):
+    success: bool
+    message: str
+    httpStatus: int
+    data: EncryptionProviderDataDict
+    note: str | None  # Optional note for failed encryption/decryption attempts`
+
+class ThemeSearchFinalListEntryDict(TypedDict):
+    name: str
+    desc: str
+    data: str
+    author: str
+    stars: int

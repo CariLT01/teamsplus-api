@@ -1,10 +1,12 @@
 from src.db_provider import DatabaseProvider
 from src.auth_provider import AuthProvider
-from src.types import *
+from src.custom_types import *
 
 import traceback
 import json
 from pydantic import BaseModel
+
+from typing import Any
 
 
 # Validation types
@@ -25,11 +27,11 @@ class ThemeDataDict(BaseModel):
     data_version: int
 
 
-def is_decodable_json(data: str):
+def is_decodable_json(data: str)-> Any | None:
     try:
         return json.loads(data)
     except: return None
-def is_valid_theme(decoded_json: TDThemeDataDict):
+def is_valid_theme(decoded_json: Any) -> bool:
     try:ThemeDataDict(**decoded_json); return True
     except Exception as e:
         print("Failed: ", traceback.format_exc())
@@ -41,7 +43,7 @@ class ThemesManager:
     def __init__(self, db_provider: DatabaseProvider):
         self.db_provider = db_provider
         
-    def publishTheme(self, themeName: str, themeDescription: str, themeData: str, tokenData: AuthenticationToken) -> AuthProviderResultDict:
+    def publishTheme(self, themeName: str, themeDescription: str, themeData: str, tokenData: AuthenticationToken) -> HTTPRequestResponseDict:
         try:
             decoded_data = is_decodable_json(themeData)
             if decoded_data == None:
@@ -95,7 +97,7 @@ class ThemesManager:
             decodedOwnedThemes: list[int] = json.loads(user_data["ownedThemes"])
             
 
-            lastrow = self.db_provider.register_new_row_theme_data_for_name(themeName, themeDescription, themeData, tokenData.get("username"), 0)
+            lastrow = self.db_provider.register_new_row_theme_data_for_name(themeName, themeDescription, themeData, tokenData["username"], 0)
             decodedOwnedThemes.append(lastrow)
 
             self.db_provider.change_authentication_data_for_name_or_id(id=tokenData.get("id"), newData={
@@ -122,9 +124,9 @@ class ThemesManager:
                 "httpStatus": 500
             }
         
-    def deleteTheme(self, themeName: str, tokenData: AuthenticationToken) -> AuthProviderResultDict:
+    def deleteTheme(self, themeName: str, tokenData: AuthenticationToken) -> HTTPRequestResponseDict:
         try:
-            themeData: ThemeDataReturnType = self.db_provider.read_theme_data_for_name_or_id(name=themeName)
+            themeData: ThemeDataReturnType | None = self.db_provider.read_theme_data_for_name_or_id(name=themeName)
 
             if themeData == None:
                 return {
@@ -132,7 +134,7 @@ class ThemesManager:
                     "message": "User not found",
                     "httpStatus": 404
                 }
-            userData: AuthenticationDataReturnType = self.db_provider.read_authentication_data_for_user_or_id(id=tokenData.get("id"))
+            userData: AuthenticationDataReturnType | None = self.db_provider.read_authentication_data_for_user_or_id(id=tokenData.get("id"))
             if (userData == None):
                 return {
                     "success": False,
@@ -171,7 +173,7 @@ class ThemesManager:
                 "httpStatus": 500
             }
     
-    def getOwned(self, tokenData: AuthenticationToken) -> AuthProviderResultDict:
+    def getOwned(self, tokenData: AuthenticationToken) -> HTTPRequestResponseDict:
         try:
             print(f"User: {tokenData["username"]}")
             user_data = self.db_provider.read_authentication_data_for_user_or_id(id=tokenData.get("id"))
@@ -211,7 +213,7 @@ class ThemesManager:
                 "message": "Internal server error",
                 "httpStatus": 500
             }
-    def getThemeInfo(self, themeName: str) -> AuthProviderResultDict:
+    def getThemeInfo(self, themeName: str) -> HTTPRequestResponseDict:
         try:
             theme_data = self.db_provider.read_theme_data_for_name_or_id(name=themeName)
 
@@ -243,7 +245,7 @@ class ThemesManager:
                 "message": "Internal server error",
                 "httpStatus": 500
             }
-    def getThemes(self, search_term:str | None) -> AuthProviderResultDict:
+    def getThemes(self, search_term:str | None) -> HTTPRequestResponseDict:
         try:
             search_term = search_term or ''
             print(search_term)
@@ -256,7 +258,7 @@ class ThemesManager:
             # Fetch and print the results
             rows = c.fetchall()
             c.close()
-            final_data: dict[str, ThemeDataReturnType] = {}
+            final_data: dict[str, ThemeSearchFinalListEntryDict] = {}
             for row in rows:
 
                 row_json: ThemeDataReturnType = {
@@ -268,7 +270,7 @@ class ThemesManager:
                     "stars": row[5]
                 }
 
-                new_json = {
+                new_json: ThemeSearchFinalListEntryDict = {
                     "name": row_json["themeName"],
                     "desc": row_json["description"],
                     "data": row_json["data"],
@@ -293,10 +295,14 @@ class ThemesManager:
                 "message": "Internal server error",
                 "httpStatus": 500
             }
-    def starTheme(self, tokenData:AuthenticationToken, themeName: str) -> AuthProviderResultDict:
+    def starTheme(self, tokenData:AuthenticationToken, themeName: str) -> HTTPRequestResponseDict:
         try:
             if themeName == None:
-                return jsonify(success=False, message="Theme not found"), 404
+                return {
+                    "success": False,
+                    "message": "Theme not found",
+                    "httpStatus": 404
+                }
             
             userData = self.db_provider.read_authentication_data_for_user_or_id(id=tokenData.get("id"))
             themeData = self.db_provider.read_theme_data_for_name_or_id(name=themeName)
@@ -331,7 +337,7 @@ class ThemesManager:
                 
                 self.db_provider.change_authentication_data_for_name_or_id(id=tokenData.get("id"), newData={
                     "favorites": json.dumps(decoded_fav),
-                    "id": userData["favorites"],
+                    "id": userData["id"],
                     "ownedThemes": userData["ownedThemes"],
                     "password": userData["password"],
                     "username": userData["username"],
@@ -358,7 +364,7 @@ class ThemesManager:
             
             self.db_provider.change_authentication_data_for_name_or_id(id=tokenData.get("id"), newData={
                 "favorites": json.dumps(decoded_fav),
-                "id": userData["favorites"],
+                "id": userData["id"],
                 "ownedThemes": userData["ownedThemes"],
                 "password": userData["password"],
                 "username": userData["username"],
@@ -379,7 +385,7 @@ class ThemesManager:
                 "message": "Internal server error",
                 "httpStatus": 500
             }
-    def getThemeStarred(self, tokenData:AuthenticationToken, themeName:str) -> AuthProviderResultDict:
+    def getThemeStarred(self, tokenData:AuthenticationToken, themeName:str) -> HTTPRequestResponseDict:
         try:
             userData = self.db_provider.read_authentication_data_for_user_or_id(id=tokenData.get("id"))
             themeData = self.db_provider.read_theme_data_for_name_or_id(name=themeName)

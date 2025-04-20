@@ -1,5 +1,5 @@
 from src.db_provider import DatabaseProvider
-from src.types import *
+from src.custom_types import *
 from src.config import JWT_SECRET_KEY, CAPTCHA_SECRET
 
 import time
@@ -21,6 +21,9 @@ from Crypto.Cipher import PKCS1_OAEP
 from flask import make_response, jsonify
 from flask import Request, request
 
+from typing import NoReturn
+from typing import cast
+
 SLEEP_DURATION_MIN = 0.7
 SLEEP_DURATION_MAX = 1.4
 
@@ -33,7 +36,7 @@ class AuthProvider:
 
         self.db_provider = db_provider
     
-    def generateToken(self, userData: AuthenticationDataReturnType, transfer: bool):
+    def generateToken(self, userData: AuthenticationDataReturnType, transfer: bool)->tuple[HTTPRequestResponseDict, str | None]:
 
         payload = {
             "username": userData['username'],
@@ -43,9 +46,9 @@ class AuthProvider:
         print(f"User: {payload["username"]}")
 
         token = jwt.encode(payload, JWT_SECRET_KEY, algorithm='HS256')
-        output: AuthProviderResultDict = {}
+        
         if transfer == False: 
-            output = {
+            output: HTTPRequestResponseDict = {
                 'success': True,
                 'message': "OK",
                 'httpStatus': 200
@@ -60,16 +63,16 @@ class AuthProvider:
             
             return output, token
         else:
-            output = {
+            output_withtransfer: HTTPRequestResponseDict = {
                 'success': True,
                 'message': "OK",
                 'httpStatus': 200,
                 "data": token
             }
 
-            return output, None
+            return output_withtransfer, None
 
-    def create_public_and_private_key(self, user_password: str, user_data: AuthenticationDataReturnType, force: bool=False):
+    def create_public_and_private_key(self, user_password: str, user_data: AuthenticationDataReturnType, force: bool=False)->None:
         try:
             if user_data["publicKey"] != None and user_data["privateKey"] != None:
                 if force == False:
@@ -79,16 +82,16 @@ class AuthProvider:
             public_key = key.publickey()
 
             private_key = key.export_key()
-            public_key = key.publickey().export_key()
+            public_key_bytes: bytes = key.publickey().export_key()
 
             private_key_str = private_key.decode()  # Convert bytes to string
-            public_key_str = public_key.decode()   # Convert bytes to string
+            public_key_str = public_key_bytes.decode()   # Convert bytes to string
             print(public_key_str, private_key_str)
 
             nonce = get_random_bytes(12)  # 12 bytes is recommended for GCM
 
-            key = hashlib.sha256(user_password.encode()).digest()
-            cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+            password_hashed = hashlib.sha256(user_password.encode()).digest()
+            cipher = AES.new(password_hashed, AES.MODE_GCM, nonce=nonce)
             ct, tag = cipher.encrypt_and_digest(private_key_str.encode())
             
 
@@ -110,7 +113,7 @@ class AuthProvider:
             print("Failed to create public & private key: ", traceback.format_exc())
         
 
-    def auth(self, username: str, password: str, transfer: bool) -> tuple[AuthProviderResultDict, str|None]:
+    def auth(self, username: str, password: str, transfer: bool) -> tuple[HTTPRequestResponseDict, str|None]:
         try:
             print("AUTH")
             user_data: AuthenticationDataReturnType | None = self.db_provider.read_authentication_data_for_user_or_id(user=username)
@@ -154,6 +157,8 @@ class AuthProvider:
             try:
                 print(request.headers)
                 token = request.headers.get("Authorization")
+                if token == None:
+                    raise ValueError("No token in headers")
                 print(token)
                 token = token[7:]  # Strip 'Bearer '
                 print(str(token))
@@ -162,7 +167,7 @@ class AuthProvider:
             print("No token???")
             return None
         try:
-            decoded_payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=['HS256'])
+            decoded_payload: AuthenticationToken|NoReturn = jwt.decode(token, JWT_SECRET_KEY, algorithms=['HS256'])
             print(decoded_payload)
             return decoded_payload
         except jwt.ExpiredSignatureError:
@@ -171,7 +176,7 @@ class AuthProvider:
         except jwt.InvalidTokenError:
             print("Invalid")
             return None
-    def register(self, username: str, password: str, captcha: str) -> AuthProviderResultDict:
+    def register(self, username: str, password: str, captcha: str) -> HTTPRequestResponseDict:
         try:
             if len(username) > 31:
                 return {
@@ -204,7 +209,7 @@ class AuthProvider:
                     'httpStatus': 400
                 }
             username = username.lower()
-            data: AuthenticationDataReturnType = self.db_provider.read_authentication_data_for_user_or_id(user=username)
+            data: AuthenticationDataReturnType | None = self.db_provider.read_authentication_data_for_user_or_id(user=username)
             if (data != None):
                 return {
                     'success': False,
@@ -214,7 +219,7 @@ class AuthProvider:
             hashed_password: str = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(14)).decode()
             
             self.db_provider.register_new_row_authentication_data_for_user(username, "[]", "[]", hashed_password, 'b', 'b', 'b')
-            self.create_public_and_private_key(password, self.db_provider.read_authentication_data_for_user_or_id(user=username), force=True)
+            self.create_public_and_private_key(password, cast(AuthenticationDataReturnType, self.db_provider.read_authentication_data_for_user_or_id(user=username)), force=True)
 
             return {
                 'success': True,
@@ -230,7 +235,7 @@ class AuthProvider:
             }
     
     @staticmethod
-    def is_valid_string(s):
+    def is_valid_string(s: str)->bool:
         return bool(re.match(r'^[a-zA-Z0-9_]+$', s))
 
     @staticmethod
@@ -247,7 +252,7 @@ class AuthProvider:
         except Exception as e:
             print("CAPTCHA: Failed: ", traceback.format_exc())
             return False
-    def search_users(self, search_term: str) -> AuthProviderResultDict:
+    def search_users(self, search_term: str) -> HTTPRequestResponseDict:
         if search_term == None or search_term == '':
             return {
                 "success": True,

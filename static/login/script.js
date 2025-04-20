@@ -47,7 +47,7 @@ function submitButtonHandler() {
                 throw new Error(`${data.message}`);
             }
             console.log("Login OK!");
-            //window.location.href = "/dashboard";
+            window.location.href = "/dashboard";
         })
             .catch(error => {
             hideLoader();

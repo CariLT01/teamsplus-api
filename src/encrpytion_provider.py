@@ -1,5 +1,5 @@
 from src.db_provider import DatabaseProvider
-from src.types import *
+from src.custom_types import *
 
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
@@ -21,11 +21,13 @@ class EncryptionProvider:
     def __init__(self, db_provider: DatabaseProvider):
         self.db_provider = db_provider
     
-    def encrypt(self, to_user_ids: list[int], body: str, password: str, tokenData: AuthenticationToken) -> AuthProviderResultDict:
+    def encrypt(self, to_user_ids: list[int], body: str, password: str, tokenData: AuthenticationToken) -> EncryptionProviderResultDict:
         body.encode().decode() # Ensure invalid characters cause error
         myUserId = tokenData["id"]
-        my_user_data = self.db_provider.read_authentication_data_for_user_or_id(id=myUserId)
-        myPrivateKey: str = my_user_data["privateKey"]
+        my_user_data: AuthenticationDataReturnType | None = self.db_provider.read_authentication_data_for_user_or_id(id=myUserId)
+        if my_user_data == None:
+            raise Exception("User data not found")
+        myPrivateKey: bytes = my_user_data["privateKey"]
         print(myPrivateKey)
         nonce = myPrivateKey[:12]
         tag = myPrivateKey[12:28]
@@ -42,10 +44,10 @@ class EncryptionProvider:
         my_privateKeyImported = RSA.import_key(pt)
 
         aes_key = get_random_bytes(32)
-        nonce = get_random_bytes(12)
+        nonce2: bytes = get_random_bytes(12)
 
 
-        cipher = AES.new(aes_key, AES.MODE_GCM, nonce=nonce)
+        cipher = AES.new(aes_key, AES.MODE_GCM, nonce=nonce2)
         ct, tag = cipher.encrypt_and_digest(body.encode())
         iv = nonce + tag # 12 bytes + 16 bytes
         
@@ -90,12 +92,12 @@ class EncryptionProvider:
                     continue
 
 
-                dest_publicKeyImported = RSA.import_key(dest_public_key)
+                dest_publicKeyImported: RSA.RsaKey = RSA.import_key(dest_public_key)
                 
 
 
-                cipher = PKCS1_OAEP.new(dest_publicKeyImported)
-                ciphertext = cipher.encrypt(aes_key)   
+                cipher_2: PKCS1_OAEP.PKCS1OAEP_Cipher = PKCS1_OAEP.new(dest_publicKeyImported)
+                ciphertext = cipher_2.encrypt(aes_key)   
 
                 encrypted_aes_b64 = base64.b64encode(ciphertext).decode()
 
@@ -108,7 +110,7 @@ class EncryptionProvider:
                 failed.append(user_id_dest)
 
 
-        final_output = {
+        final_output: EncryptionProviderDataDict = {
             "body": encrypted_body_b64,
             "iv": iv_b64,
             "signature": signature_b64,
@@ -116,7 +118,7 @@ class EncryptionProvider:
             "author": tokenData["id"]
         }
 
-        note = f"Failed to encrypt for: {failed}"
+        note: str | None = f"Failed to encrypt for: {failed}"
         if len(failed)==0:note=None
 
 
@@ -128,9 +130,9 @@ class EncryptionProvider:
             "note": note
         }
 
-    def decrypt(self, signature: str, body: str, iv: str, aes_keys: dict[int, str], tokenData: AuthenticationToken, password: str, author: int) -> AuthProviderResultDict:
+    def decrypt(self, signature: str, body: str, iv: str, aes_keys: dict[str, str], tokenData: AuthenticationToken, password: str, author: int) -> HTTPRequestResponseDict:
         try:
-            aes_key = aes_keys.get(str(tokenData["id"]))
+            aes_key: str | None = aes_keys.get(str(tokenData["id"]))
             print(aes_keys, tokenData["id"])
             if aes_key == None:
                 return {
@@ -159,8 +161,10 @@ class EncryptionProvider:
             # Get private key
 
             myUserId = tokenData["id"]
-            my_user_data = self.db_provider.read_authentication_data_for_user_or_id(id=myUserId)
-            myPrivateKey: str = my_user_data["privateKey"]
+            my_user_data: AuthenticationDataReturnType | None = self.db_provider.read_authentication_data_for_user_or_id(id=myUserId)
+            if my_user_data == None:
+                raise Exception("User data not found")
+            myPrivateKey: bytes = my_user_data["privateKey"]
             #print(myPrivateKey)
             nonce = myPrivateKey[:12]
             tag = myPrivateKey[12:28]

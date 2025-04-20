@@ -1,11 +1,11 @@
 import src.config as CONFIG
 import sqlite3
 from typing import NoReturn
-from src.types import *
+from src.custom_types import *
 
 class DatabaseProvider:
 
-    def __init__(self):
+    def __init__(self)->None:
         self.load_databases()
         self.database_migration()
 
@@ -73,7 +73,7 @@ class DatabaseProvider:
         else:
             c.execute(f'SELECT * FROM users WHERE id = ?', (id,))
 
-        user_data: tuple[int, str, str, str, str] = c.fetchone()
+        user_data: tuple[int, str, str, str, str, str, bytes, None] = c.fetchone()
         c.close()
         if user_data == None: return None
         print(f"User data: {user_data}")
@@ -88,7 +88,7 @@ class DatabaseProvider:
             "privateKey": user_data[6],
             "iv": user_data[7]
         }
-    def change_authentication_data_for_name_or_id(self, *, user: str | None = None, id: int | None = None, newData: AuthenticationDataReturnType):
+    def change_authentication_data_for_name_or_id(self, *, user: str | None = None, id: int | None = None, newData: AuthenticationDataReturnType)->None:
         if (user == None and id == None):
             raise ValueError("User and ID == null. One must not be null for indexing")
         if (user != None and id != None):
@@ -139,7 +139,7 @@ class DatabaseProvider:
             "stars": theme_data[5]
         }
 
-    def change_theme_data_for_name_or_id(self, *, user: str | None = None, id: int | None = None, newData: ThemeDataReturnType):
+    def change_theme_data_for_name_or_id(self, *, user: str | None = None, id: int | None = None, newData: ThemeDataReturnType)->None:
         if (user == None and id == None):
             raise ValueError("User and ID == null. One must not be null for indexing")
         if (user != None and id != None):
@@ -186,7 +186,7 @@ class DatabaseProvider:
         c.close()
         self.themes_database_db.commit()
         return last_row or -1
-    def delete_theme_data_by_name_or_id(self, *, name: str|None = None, id: str|None = None):
+    def delete_theme_data_by_name_or_id(self, *, name: str|None = None, id: str|None = None)->None:
         if (name == None and id == None):
             raise ValueError("Name and ID == null. One must not be null for indexing")
         if (name != None and id != None):

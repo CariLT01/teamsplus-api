@@ -3,14 +3,17 @@ from typing import TypedDict, NoReturn
 from pydantic import BaseModel
 import platform
 import logging
+import random, time
 
 from flask import Flask, request, jsonify, render_template, make_response, Response
 from flask_cors import CORS
 
+from typing import Any, cast
+
 from src.auth_provider import AuthProvider
 from src.db_provider import DatabaseProvider
 from src.themes_manager import ThemesManager
-from src.types import *
+from src.custom_types import *
 from src.encrpytion_provider import EncryptionProvider
 
 logging.basicConfig(level=logging.INFO)
@@ -58,7 +61,7 @@ class VersionsDict(TypedDict):
 
 
 def read_versions_file()->VersionsDict:
-    with open(f"{ABSOLUTE_PATH}data/versions.json", "r") as f: return json.loads(f.read())
+    with open(f"{ABSOLUTE_PATH}data/versions.json", "r") as f: return cast(VersionsDict, json.loads(f.read()))
 
 
     
@@ -76,14 +79,14 @@ def dashboard_page()->str:
 def register_page()->str:
     return render_template("registerPage/index.html")
 
-import random, time
+
 
 @app.route("/api/v1/auth/login", methods=['POST'])
 def auth()->tuple[Response, int]:
     try:
         print("AUH AUTH AUTH AUTH", flush=True)
         print("*")
-        data = request.get_json()
+        data: Any = request.get_json()
         username = data.get('username')
         password = data.get('password')
         transfer = data.get('transfer')
@@ -369,6 +372,8 @@ def decrypt()->tuple[Response, int]:
 def search_users()->tuple[Response, int]:
     try:
         search_term = request.args.get("search")
+        if search_term == None:
+            return jsonify(success=False, message="No search term provided"), 400
 
         out = authProvider.search_users(search_term)
         return jsonify(out), out["httpStatus"]
