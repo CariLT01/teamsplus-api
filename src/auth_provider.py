@@ -54,13 +54,6 @@ class AuthProvider:
                 'httpStatus': 200
             }
 
-
-
-
-            # Set cookie 
-
-
-            
             return output, token
         else:
             output_withtransfer: HTTPRequestResponseDict = {
@@ -146,7 +139,9 @@ class AuthProvider:
                 'httpStatus': 500
             }, None
     def check_token(self, request: Request) -> AuthenticationToken | None:
-        token = request.cookies.get('jwt')
+        token = request.cookies.get(
+            
+            'jwt')
 
         if not token:
             try:

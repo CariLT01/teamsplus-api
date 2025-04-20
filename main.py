@@ -14,7 +14,7 @@ from src.auth_provider import AuthProvider
 from src.db_provider import DatabaseProvider
 from src.themes_manager import ThemesManager
 from src.custom_types import *
-from src.encrpytion_provider import EncryptionProvider
+from src.encryption_provider import EncryptionProvider
 
 logging.basicConfig(level=logging.INFO)
 
