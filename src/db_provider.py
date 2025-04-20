@@ -9,7 +9,7 @@ class DatabaseProvider:
         self.load_databases()
         self.database_migration()
 
-    def database_migration(self):
+    def database_migration(self) -> None:
         print("Database migrate 2 keys")
         try:
             c = self.user_data_database_db.cursor()
@@ -23,7 +23,7 @@ class DatabaseProvider:
             print("Migration failed with following error:", e)
         print("Database finish migrating 2 keys")
 
-    def load_databases(self):
+    def load_databases(self) -> None:
 
         self.user_data_database_db = sqlite3.connect(f"{CONFIG.ABSOLUTE_PATH}databases/users.db", check_same_thread=False)
 
