@@ -1,1 +1,182 @@
-(()=>{"use strict";function e(){const o=document.querySelector("#my-themes");null!=o&&(o.innerHTML="",fetch("/api/v1/themes/get_owned",{method:"GET",headers:{"Content-Type":"application/json"}}).then((e=>(console.log(e),e.json()))).then((n=>{if(null==n.success||0==n.success)throw new Error("Success field not found or unsuccessfull");if(null==n.message)throw new Error("No message field found");if(null==n.data)throw new Error("No data field found");const t=n.data;console.log(n.data),t.forEach(((n,t)=>{var l;l=o,fetch(`/api/v1/themes/get_info?theme=${n}`,{method:"GET",headers:{"Content-Type":"application/json"}}).then((e=>(console.log(e),e.json()))).then((o=>{if(null==o.message)throw new Error("No message field found");if(null==o.success||0==o.success)throw new Error(`${o.message}`);if(null==o.data)throw new Error("No data field found");const n=o.data.name,t=o.data.desc;if(null==n||null==t)return void console.error("Invalid theme data. Name or desc not found");const r=(new DOMParser).parseFromString('\n<div class="published-theme">\n    <h3 id="theme-name">THeme name</h3>\n    <p id="theme-desc">desc</p>\n    <button id="theme-del" class="normal-button">Delete</button>\n</div>\n',"text/html").body.firstElementChild;if(null==r)return;const s=r.querySelector("#theme-name"),c=r.querySelector("#theme-desc"),a=r.querySelector("#theme-del");null!=s&&null!=c&&null!=a?(s.textContent=n,c.textContent=t,a.addEventListener("click",(()=>{!function(o){fetch("/api/v1/themes/delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:o})}).then((e=>(console.log(e),e.json()))).then((o=>{if(null==o.success||0==o.success)throw new Error("Success field not found or unsuccessfull");if(null==o.message)throw new Error("No message field found");console.log("Delete OK!"),alert("Delete OK"),e()})).catch((e=>{console.error("Error:",e),alert(`Failed to delete: ${e}`)}))}(n)})),l.appendChild(r)):console.error("One or many elements null")})).catch((e=>{console.error("Error:",e),alert(`Failed to process theme: ${e}`)}))}))})).catch((e=>{console.error("Error:",e),alert(`Failed to refresh listings: ${e}`)})))}window.onload=function(){console.log("Window loaded!"),function(){const o=document.querySelector("#publish-theme-btn"),n=document.querySelector("#theme-name"),t=document.querySelector("#theme-desc"),l=document.querySelector("#theme-data");null!=o&&null!=n&&null!=t&&null!=l?o.addEventListener("click",(o=>{o.preventDefault(),fetch("/api/v1/themes/publish",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({themeName:n.value,themeDescription:t.value,themeData:l.value})}).then((e=>(console.log(e),e.json()))).then((o=>{if(null==o.message)throw new Error("No message field found");if(null==o.success||0==o.success)throw new Error(`${o.message}`);console.log("Publish OK!"),alert("Publish OK"),e()})).catch((e=>{console.error("Error:",e),alert(`Failed to login: ${e}`)}))})):console.error("One or many elements are null")}(),e()}})();
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+
+const API_ENDPOINT2 = "";
+const PUBLISHED_THEME_CARD = `
+<div class="published-theme">
+    <h3 id="theme-name">THeme name</h3>
+    <p id="theme-desc">desc</p>
+    <button id="theme-del" class="normal-button">Delete</button>
+</div>
+`;
+function onPublishHandler() {
+    const submitBtn = document.querySelector("#publish-theme-btn");
+    const themeNameField = document.querySelector("#theme-name");
+    const themeDescField = document.querySelector("#theme-desc");
+    const themeDataField = document.querySelector("#theme-data");
+    if (submitBtn == null || themeNameField == null || themeDescField == null || themeDataField == null) {
+        console.error("One or many elements are null");
+        return;
+    }
+    ;
+    submitBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        // Post request
+        fetch(`/api/v1/themes/publish`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                themeName: themeNameField.value,
+                themeDescription: themeDescField.value,
+                themeData: themeDataField.value
+            })
+        })
+            .then(response => {
+            console.log(response);
+            return response.json();
+        })
+            .then(data => {
+            if (data.message == null) {
+                throw new Error("No message field found");
+            }
+            if (data.success == null || data.success == false) {
+                throw new Error(`${data.message}`);
+            }
+            console.log("Publish OK!");
+            alert("Publish OK");
+            refreshThemeListings();
+        })
+            .catch(error => {
+            console.error('Error:', error);
+            alert(`Failed to login: ${error}`);
+        });
+    });
+}
+function deleteTheme(themeName) {
+    fetch(`${API_ENDPOINT2}/api/v1/themes/delete`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: themeName,
+        })
+    })
+        .then(response => {
+        console.log(response);
+        return response.json();
+    })
+        .then(data => {
+        if (data.success == null || data.success == false) {
+            throw new Error("Success field not found or unsuccessfull");
+        }
+        if (data.message == null) {
+            throw new Error("No message field found");
+        }
+        console.log("Delete OK!");
+        alert("Delete OK");
+        refreshThemeListings();
+    })
+        .catch(error => {
+        console.error('Error:', error);
+        alert(`Failed to delete: ${error}`);
+    });
+}
+function addListing(themeName, listingsContainer) {
+    fetch(`${API_ENDPOINT2}/api/v1/themes/get_info?theme=${themeName}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {
+        console.log(response);
+        return response.json();
+    })
+        .then(data => {
+        if (data.message == null) {
+            throw new Error("No message field found");
+        }
+        if (data.success == null || data.success == false) {
+            throw new Error(`${data.message}`);
+        }
+        if (data.data == null) {
+            throw new Error("No data field found");
+        }
+        const name = data.data.name;
+        const desc = data.data.desc;
+        if (name == null || desc == null) {
+            console.error("Invalid theme data. Name or desc not found");
+            return;
+        }
+        const parser = new DOMParser();
+        const parsed = parser.parseFromString(PUBLISHED_THEME_CARD, "text/html").body.firstElementChild;
+        if (parsed == null)
+            return;
+        const themeNameEl = parsed.querySelector("#theme-name");
+        const themeDescEl = parsed.querySelector("#theme-desc");
+        const themeDelEl = parsed.querySelector("#theme-del");
+        if (themeNameEl == null || themeDescEl == null || themeDelEl == null) {
+            console.error("One or many elements null");
+            return;
+        }
+        themeNameEl.textContent = name;
+        themeDescEl.textContent = desc;
+        themeDelEl.addEventListener("click", () => {
+            deleteTheme(name);
+        });
+        listingsContainer.appendChild(parsed);
+    })
+        .catch(error => {
+        console.error('Error:', error);
+        alert(`Failed to process theme: ${error}`);
+    });
+}
+function refreshThemeListings() {
+    const themesContainer = document.querySelector("#my-themes");
+    if (themesContainer == null)
+        return;
+    themesContainer.innerHTML = '';
+    // Get request
+    fetch(`${API_ENDPOINT2}/api/v1/themes/get_owned`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {
+        console.log(response);
+        return response.json();
+    })
+        .then(data => {
+        if (data.success == null || data.success == false) {
+            throw new Error("Success field not found or unsuccessfull");
+        }
+        if (data.message == null) {
+            throw new Error("No message field found");
+        }
+        if (data.data == null) {
+            throw new Error("No data field found");
+        }
+        const listings = data.data;
+        console.log(data.data);
+        listings.forEach((value, index) => {
+            addListing(value, themesContainer);
+        });
+    })
+        .catch(error => {
+        console.error('Error:', error);
+        alert(`Failed to refresh listings: ${error}`);
+    });
+}
+function m_onload2() {
+    console.log("Window loaded!");
+    onPublishHandler();
+    refreshThemeListings();
+}
+window.onload = m_onload2;
+
+/******/ })()
+;

@@ -1,2 +1,5 @@
 node_modules/
 src/__pycache__/
+.venv/
+.mypy_cache/
+.vscode/

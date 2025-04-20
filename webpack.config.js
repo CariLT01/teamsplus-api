@@ -1,3 +1,4 @@
+const TerserPlugin = require('terser-webpack-plugin');
 const path = require('path');
 
 module.exports = {
@@ -7,7 +8,7 @@ module.exports = {
         'static/register/script': './static/register/script.ts',
         'static/dashboard/script': './static/dashboard/script.ts',
         'static/home/script': './static/home/script.ts',
-        'static/life/script': './static/life/script.ts'
+        'static/game_of_life/src/bundle': "./static/game_of_life/src/main.ts"
     },
     output: {
         filename: '[name].js',
@@ -32,4 +33,7 @@ module.exports = {
         },
       },
     mode: 'production', // Set the mode to production for optimizations
+    optimization: {
+        minimize: false,
+      }
 };

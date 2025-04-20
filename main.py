@@ -14,6 +14,7 @@ from src.themes_manager import ThemesManager
 from src.custom_types import *
 from src.encryption_provider import EncryptionProvider
 from src.config import *
+from src.game_of_life.game_of_life import GameOfLife
 
 
 
@@ -22,6 +23,8 @@ db_provider = DatabaseProvider()
 authProvider = AuthProvider(db_provider)
 themeManager = ThemesManager(db_provider)
 encryptionProvider = EncryptionProvider(db_provider)
+gameOfLifeProvider = GameOfLife(authProvider)
+
 CORS(app, origins=["https://teams.microsoft.com"]) # Fix CORS issue during development
 
 
@@ -69,7 +72,9 @@ def dashboard_page()->str:
 @app.route("/register")
 def register_page()->str:
     return render_template("registerPage/index.html")
-
+@app.route("/game_of_life")
+def game_of_life_page()->str:
+    return render_template("game_of_life/index.html")
 
 
 @app.route("/api/v1/auth/login", methods=['POST'])
@@ -368,6 +373,31 @@ def search_users()->tuple[Response, int]:
 
         out = authProvider.search_users(search_term)
         return jsonify(out), out["httpStatus"]
+    except Exception as e:
+        print("Failed: ", traceback.format_exc())
+        return jsonify(success=False, message="Internal server error"), 500
+
+# Routes for GAME OF LIFE
+@app.route("/api/v1/game_of_life/get_event", methods=["GET"])
+def game_of_life_get_event()->tuple[Response, int]:
+    try:
+        resp = gameOfLifeProvider.serve_event_get_request()
+        return jsonify(resp), resp["httpStatus"]
+    except Exception as e:
+        print("Failed: ", traceback.format_exc())
+        return jsonify(success=False, message="Internal server error"), 500
+@app.route("/api/v1/game_of_life/option_select_post", methods=["POST"])
+def game_of_life_option_select_post()->tuple[Response, int]:
+    try:
+        tokenData = authProvider.check_token(request)
+        if tokenData == None:
+            return jsonify(success=False, message="Unauthorized", errorId="UNAUTHORIZED"), 401
+        if tokenData.get("username") == None:
+            return jsonify(success=False, message="Invalid token - Username field not found", errorId="UNAUTHORIZED"), 401
+        
+        resp = gameOfLifeProvider.serve_event_post_request()
+        return jsonify(resp), resp["httpStatus"]
+
     except Exception as e:
         print("Failed: ", traceback.format_exc())
         return jsonify(success=False, message="Internal server error"), 500

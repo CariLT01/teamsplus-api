@@ -104,3 +104,24 @@ class ThemeSearchFinalListEntryDict(TypedDict):
     data: str
     author: str
     stars: int
+
+class GOL_HTTP_Data(TypedDict):
+    '''
+    Type def
+    '''
+
+    options: list[str]
+    content: str
+    eventId: int
+
+
+
+class GameOfLife_HTTPGetEventReturnType(TypedDict):
+    '''
+    Type definition for return type of LifeEvent get request
+    '''
+
+    success: bool
+    message: str
+    data: NotRequired[GOL_HTTP_Data | None]
+    httpStatus: int

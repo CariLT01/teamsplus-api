@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game of life</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: black;
+            color: white;
+        }
+
+        * {
+            font-family: "Times New Roman", Times, serif;
+        }
+
+        p {
+            letter-spacing: 0.3px;
+            line-height: 1.6;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column-reverse;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: transparent;
+            padding: 10px;
+
+            width: 60vw;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+
+        .main-container::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(to bottom, black, transparent);
+            pointer-events: none;
+        }
+
+        .event {
+            padding: 10;
+            margin: 15px;
+            background-color: transparent;
+        }
+
+        .main-container p {
+            margin: 0;
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+            padding: 10px 10px;
+
+        }
+
+        .options button {
+            flex-grow: 1;
+            border: 1px solid white;
+            background-color: black;
+            color: white;
+            padding: 6px 0;
+            font-family: "Times New Roman", Times, serif;
+
+            cursor: pointer;
+        }
+
+        .options button:hover {
+            border: 1px solid black;
+            background-color: white;
+            color: black;
+        }
+
+        .option-selected {
+            border: 1px solid black !important;
+            background-color: white !important;
+            color: black !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="event-list" id="event-list">
+            <!--<div class="event">
+                <div class="content">
+                    <h1>A Normal Day</h1>
+                    <p>The alarm buzzed at 7:00 AM. Mia groaned, slapped the snooze button, and pulled the blanket over her head. Ten minutes later, she finally dragged herself out of bed, made a quick cup of coffee, and stared out the window while sipping it, watching the sun rise behind the apartment buildings.</p>
+                  
+                    <p>She caught the train just in time, headphones in, eyes half-closed. Work was routine—emails, meetings, a few laughs with coworkers. Lunch was a sandwich at her desk. The afternoon crawled, but eventually, the clock hit 5:00.</p>
+                  
+                    <p>On the way home, she stopped by the store for groceries. Back at her place, she made pasta, watched an episode of her favorite show, and texted her friend about weekend plans.</p>
+                  
+                    <p>By 10:30, she was in bed, phone in hand, scrolling until her eyelids got heavy. Another day done—simple, quiet, but hers.</p>
+                    <br>
+                    <p>What should I do next?</p>
+                </div>
+                <div class="options">
+                    <button type="button">Go to school</button>
+                    <button type="button">Learn piano</button>
+                    <button type="button">Farming</button>
+                    <button type="button">Minecraft</button>
+                </div>
+            </div>-->
+
+        </div>
+
+    </div>
+</body>
+<script src="{{ url_for('static', filename='game_of_life/src/bundle.js') }}"></script>
+
+</html>
