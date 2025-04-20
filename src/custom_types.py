@@ -1,8 +1,14 @@
+"""
+Custom types needed for MyPy type checker
+"""
 
 from typing import TypedDict, NotRequired
 from typing import Any
 
 class AuthenticationDataReturnType(TypedDict):
+    '''
+    Return type for user data when reading from database
+    '''
     id: int
     username: str
     favorites: str
@@ -13,6 +19,9 @@ class AuthenticationDataReturnType(TypedDict):
     iv: str|None
 
 class ThemeDataReturnType(TypedDict):
+    '''
+    Return type for data about a theme
+    '''
     id: int
     themeName: str
     description: str
@@ -20,6 +29,9 @@ class ThemeDataReturnType(TypedDict):
     author: str
     stars: int
 class AuthenticationToken(TypedDict):
+    '''
+    Return type for JWT token payload
+    '''
     exp: int
     username: str
     id: int
@@ -27,10 +39,16 @@ class AuthenticationToken(TypedDict):
 ## Theme
 
 class TDThemeData_FontsDictType(TypedDict):
+    '''
+    Sub-type
+    '''
     fontFamily: str
     imports: str
 
 class TDThemeData_DataFieldDictType(TypedDict):
+    '''
+    Sub-type
+    '''
     varColors: dict[str, str]
     classColors: dict[str, str]
     fonts: TDThemeData_FontsDictType
@@ -38,6 +56,9 @@ class TDThemeData_DataFieldDictType(TypedDict):
     twemojiSupport: bool
 
 class TDThemeDataDict(TypedDict):
+    '''
+    Type definition for theme
+    '''
     data: TDThemeData_DataFieldDictType
     name: str
     data_version: int
@@ -45,6 +66,9 @@ class TDThemeDataDict(TypedDict):
 ## Auth provider
 
 class HTTPRequestResponseDict(TypedDict):
+    '''
+    Generic return type for HTTP request
+    '''
     success: bool
     message: str
     httpStatus: int
@@ -52,6 +76,9 @@ class HTTPRequestResponseDict(TypedDict):
 
 
 class EncryptionProviderDataDict(TypedDict):
+    '''
+    Input? type for encryption function
+    '''
     body: str
     iv: str
     signature: str
@@ -59,6 +86,9 @@ class EncryptionProviderDataDict(TypedDict):
     author: int  # ID of the author of the message
 
 class EncryptionProviderResultDict(TypedDict):
+    '''
+    Return type for encryption function
+    '''
     success: bool
     message: str
     httpStatus: int
@@ -66,6 +96,9 @@ class EncryptionProviderResultDict(TypedDict):
     note: str | None  # Optional note for failed encryption/decryption attempts`
 
 class ThemeSearchFinalListEntryDict(TypedDict):
+    '''
+    Type definition
+    '''
     name: str
     desc: str
     data: str

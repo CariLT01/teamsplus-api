@@ -19,9 +19,15 @@ import traceback
 class EncryptionProvider:
 
     def __init__(self, db_provider: DatabaseProvider):
+        '''
+        Encryption provider
+        '''
         self.db_provider = db_provider
     
     def encrypt(self, to_user_ids: list[int], body: str, password: str, tokenData: AuthenticationToken) -> EncryptionProviderResultDict:
+        '''
+        Encrypts message
+        '''
         body.encode().decode() # Ensure invalid characters cause error
         myUserId = tokenData["id"]
         my_user_data: AuthenticationDataReturnType | None = self.db_provider.read_authentication_data_for_user_or_id(id=myUserId)
@@ -131,6 +137,9 @@ class EncryptionProvider:
         }
 
     def decrypt(self, signature: str, body: str, iv: str, aes_keys: dict[str, str], tokenData: AuthenticationToken, password: str, author: int) -> HTTPRequestResponseDict:
+        '''
+        Decrypts message
+        '''
         try:
             aes_key: str | None = aes_keys.get(str(tokenData["id"]))
             print(aes_keys, tokenData["id"])

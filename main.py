@@ -1,9 +1,7 @@
-import jwt, datetime, json, bcrypt, traceback, sqlite3
+import json, traceback
 from typing import TypedDict, NoReturn
 from pydantic import BaseModel
 import platform
-import logging
-import random, time
 
 from flask import Flask, request, jsonify, render_template, make_response, Response
 from flask_cors import CORS
@@ -15,16 +13,7 @@ from src.db_provider import DatabaseProvider
 from src.themes_manager import ThemesManager
 from src.custom_types import *
 from src.encryption_provider import EncryptionProvider
-
-logging.basicConfig(level=logging.INFO)
-
-TOKEN_EXPIRY_TIME = datetime.timedelta(days=7)
-TOKEN_EXPIRY_INT = (60 * 60 * 24) * 7
-ABSOLUTE_PATH = ''
-DOWNLOAD_URL = '/static/teamsplus_versions/'
-
-
-
+from src.config import *
 
 
 
@@ -33,7 +22,7 @@ db_provider = DatabaseProvider()
 authProvider = AuthProvider(db_provider)
 themeManager = ThemesManager(db_provider)
 encryptionProvider = EncryptionProvider(db_provider)
-CORS(app, origins=["https://teams.microsoft.com"])
+CORS(app, origins=["https://teams.microsoft.com"]) # Fix CORS issue during development
 
 # Compare types
 

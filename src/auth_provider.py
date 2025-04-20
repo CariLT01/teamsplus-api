@@ -33,11 +33,15 @@ TOKEN_EXPIRY_INT = (60 * 60 * 24) * 7
 class AuthProvider:
 
     def __init__(self, db_provider: DatabaseProvider):
-
+        '''
+        Authentication class
+        '''
         self.db_provider = db_provider
     
     def generateToken(self, userData: AuthenticationDataReturnType, transfer: bool)->tuple[HTTPRequestResponseDict, str | None]:
-
+        '''
+        Generates JWT token (internal)
+        '''
         payload = {
             "username": userData['username'],
             "id": userData['id'],
@@ -66,6 +70,9 @@ class AuthProvider:
             return output_withtransfer, None
 
     def create_public_and_private_key(self, user_password: str, user_data: AuthenticationDataReturnType, force: bool=False)->None:
+        '''
+        Creates public & private key for message encryption feature
+        '''
         try:
             if user_data["publicKey"] != None and user_data["privateKey"] != None:
                 if force == False:
@@ -107,6 +114,9 @@ class AuthProvider:
         
 
     def auth(self, username: str, password: str, transfer: bool) -> tuple[HTTPRequestResponseDict, str|None]:
+        '''
+        Authenticates user and creates token
+        '''
         try:
             print("AUTH")
             user_data: AuthenticationDataReturnType | None = self.db_provider.read_authentication_data_for_user_or_id(user=username)
@@ -139,6 +149,9 @@ class AuthProvider:
                 'httpStatus': 500
             }, None
     def check_token(self, request: Request) -> AuthenticationToken | None:
+        '''
+        Checks user token and returns payload
+        '''
         token = request.cookies.get(
             
             'jwt')
@@ -172,6 +185,9 @@ class AuthProvider:
             print("Invalid")
             return None
     def register(self, username: str, password: str, captcha: str) -> HTTPRequestResponseDict:
+        '''
+        Registers a new user
+        '''
         try:
             if len(username) > 31:
                 return {
@@ -248,6 +264,9 @@ class AuthProvider:
             print("CAPTCHA: Failed: ", traceback.format_exc())
             return False
     def search_users(self, search_term: str) -> HTTPRequestResponseDict:
+        '''
+        Search API for users
+        '''
         if search_term == None or search_term == '':
             return {
                 "success": True,

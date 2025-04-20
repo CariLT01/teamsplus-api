@@ -6,10 +6,16 @@ from src.custom_types import *
 class DatabaseProvider:
 
     def __init__(self)->None:
+        '''
+        Class that reads/writes/changes data in the database
+        '''
         self.load_databases()
         self.database_migration()
 
     def database_migration(self) -> None:
+        '''
+        Add 2 keys to migrate for encryption (not needed for new databases)
+        '''
         print("Database migrate 2 keys")
         try:
             c = self.user_data_database_db.cursor()
@@ -24,7 +30,10 @@ class DatabaseProvider:
         print("Database finish migrating 2 keys")
 
     def load_databases(self) -> None:
-
+        '''
+        Loads the databases
+        Creates tables if needed
+        '''
         self.user_data_database_db = sqlite3.connect(f"{CONFIG.ABSOLUTE_PATH}databases/users.db", check_same_thread=False)
 
 
@@ -89,6 +98,9 @@ class DatabaseProvider:
             "iv": user_data[7]
         }
     def change_authentication_data_for_name_or_id(self, *, user: str | None = None, id: int | None = None, newData: AuthenticationDataReturnType)->None:
+        '''
+        Changes user data for user. Specify either username or ID.
+        '''
         if (user == None and id == None):
             raise ValueError("User and ID == null. One must not be null for indexing")
         if (user != None and id != None):
@@ -139,10 +151,13 @@ class DatabaseProvider:
             "stars": theme_data[5]
         }
 
-    def change_theme_data_for_name_or_id(self, *, user: str | None = None, id: int | None = None, newData: ThemeDataReturnType)->None:
-        if (user == None and id == None):
+    def change_theme_data_for_name_or_id(self, *, name: str | None = None, id: int | None = None, newData: ThemeDataReturnType)->None:
+        '''
+        Change data about a theme.
+        '''
+        if (name == None and id == None):
             raise ValueError("User and ID == null. One must not be null for indexing")
-        if (user != None and id != None):
+        if (name != None and id != None):
             raise ValueError("One must be none. Only one is needed for indexing")
         c = self.themes_database_db.cursor()
         if id:
@@ -175,7 +190,7 @@ class DatabaseProvider:
 
     def register_new_row_theme_data_for_name(self, name: str, description: str, data: str, author: str, stars: int) -> int:
         """
-        Registers a new theme to the database. Note: password represents hashed password, not raw password.
+        Registers a new theme to the database.
         """
         c = self.themes_database_db.cursor()
         c.execute('''
@@ -187,6 +202,9 @@ class DatabaseProvider:
         self.themes_database_db.commit()
         return last_row or -1
     def delete_theme_data_by_name_or_id(self, *, name: str|None = None, id: str|None = None)->None:
+        '''
+        Deletes theme (entry) from theme table.
+        '''
         if (name == None and id == None):
             raise ValueError("Name and ID == null. One must not be null for indexing")
         if (name != None and id != None):
