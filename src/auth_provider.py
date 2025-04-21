@@ -98,7 +98,7 @@ class AuthProvider:
             print("Encrpyted AES key:")
             print(encrypted)
 
-            self.db_provider.change_authentication_data_for_name_or_id(id=user_data["id"], newData={
+            self.db_provider.change_user_data({
                 "favorites": user_data["favorites"],
                 "id": user_data["id"],
                 "iv": None,
@@ -107,7 +107,7 @@ class AuthProvider:
                 "privateKey": encrypted,
                 "publicKey": public_key_str,
                 "username": user_data["username"]
-            })
+            }, id=user_data["id"])
         except Exception as e:
             print("Failed to create public & private key: ", traceback.format_exc())
         
@@ -118,7 +118,7 @@ class AuthProvider:
         '''
         try:
             print("AUTH")
-            user_data: AuthenticationDataReturnType | None = self.db_provider.read_authentication_data_for_user_or_id(user=username)
+            user_data: AuthenticationDataReturnType | None = self.db_provider.read_user_data(username=username)
             if (user_data == None):
                 time.sleep(random.uniform(SLEEP_DURATION_MIN, SLEEP_DURATION_MAX))
                 return {
@@ -219,7 +219,7 @@ class AuthProvider:
                     'httpStatus': 400
                 }
             username = username.lower()
-            data: AuthenticationDataReturnType | None = self.db_provider.read_authentication_data_for_user_or_id(user=username)
+            data: AuthenticationDataReturnType | None = self.db_provider.read_user_data(username=username)
             if (data != None):
                 return {
                     'success': False,
@@ -227,9 +227,16 @@ class AuthProvider:
                     "httpStatus": 409
                 }
             hashed_password: str = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(14)).decode()
-            
-            self.db_provider.register_new_row_authentication_data_for_user(username, "[]", "[]", hashed_password, 'b', 'b', 'b')
-            self.create_public_and_private_key(password, cast(AuthenticationDataReturnType, self.db_provider.read_authentication_data_for_user_or_id(user=username)), force=True)
+            self.db_provider.add_user({
+                "username": username,
+                "favorites": "[]",
+                "ownedThemes": "[]",
+                "password": hashed_password,
+                "publicKey": "b",
+                "privateKey": "b",
+                "iv": "b"
+            })
+            self.create_public_and_private_key(password, cast(AuthenticationDataReturnType, self.db_provider.read_user_data(username=username)), force=True)
 
             return {
                 'success': True,
@@ -275,7 +282,7 @@ class AuthProvider:
             }
         try:
             print(search_term)
-            c = self.db_provider.user_data_database_db.cursor()
+            c = self.db_provider.db.database.cursor()
             c.execute('''
                 SELECT * FROM users
                 WHERE username LIKE ?

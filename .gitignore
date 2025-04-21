@@ -3,3 +3,5 @@ src/__pycache__/
 .venv/
 .mypy_cache/
 .vscode/
+src/game_of_life/__pycache__/
+databases/users.db

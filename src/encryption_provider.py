@@ -30,7 +30,7 @@ class EncryptionProvider:
         '''
         body.encode().decode() # Ensure invalid characters cause error
         myUserId = tokenData["id"]
-        my_user_data: AuthenticationDataReturnType | None = self.db_provider.read_authentication_data_for_user_or_id(id=myUserId)
+        my_user_data: AuthenticationDataReturnType | None = self.db_provider.read_user_data(id=myUserId)
         if my_user_data == None:
             raise Exception("User data not found")
         myPrivateKey: bytes = my_user_data["privateKey"]
@@ -55,7 +55,7 @@ class EncryptionProvider:
 
         cipher = AES.new(aes_key, AES.MODE_GCM, nonce=nonce2)
         ct, tag = cipher.encrypt_and_digest(body.encode())
-        iv = nonce + tag # 12 bytes + 16 bytes
+        iv = nonce2 + tag # 12 bytes + 16 bytes
         
 
         hashed_body = SHA256.new(body.encode())
@@ -82,7 +82,7 @@ class EncryptionProvider:
 
         for user_id_dest in to_user_ids:
             try:
-                dest_user_data = self.db_provider.read_authentication_data_for_user_or_id(id=user_id_dest)
+                dest_user_data = self.db_provider.read_user_data(id=user_id_dest)
 
                 if dest_user_data == None:
                     print("Failed to encrypt for: ", user_id_dest)
@@ -157,7 +157,7 @@ class EncryptionProvider:
 
             # Init verify
 
-            author_userData = self.db_provider.read_authentication_data_for_user_or_id(id=author)
+            author_userData = self.db_provider.read_user_data(id=author)
             if author_userData == None:
                 raise Exception("Author data not found")
             
@@ -170,7 +170,7 @@ class EncryptionProvider:
             # Get private key
 
             myUserId = tokenData["id"]
-            my_user_data: AuthenticationDataReturnType | None = self.db_provider.read_authentication_data_for_user_or_id(id=myUserId)
+            my_user_data: AuthenticationDataReturnType | None = self.db_provider.read_user_data(id=myUserId)
             if my_user_data == None:
                 raise Exception("User data not found")
             myPrivateKey: bytes = my_user_data["privateKey"]
