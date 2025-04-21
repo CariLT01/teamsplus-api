@@ -1,9 +1,10 @@
-from flask import request
+from flask import request, Response, jsonify
 from src.auth_provider import AuthProvider
 
 from src.custom_types import *
 
 import random
+import traceback
 
 # Utility functions
 
@@ -53,3 +54,26 @@ class GameOfLife:
         username = tokenPayload['username'] # Example
 
         return generate_request_data(True, "Not implemented", None, 200) # Temporary HTTP response
+        
+    def game_of_life_get_event_route(self)->tuple[Response, int]:
+        try:
+            resp = self.serve_event_get_request()
+            return jsonify(resp), resp["httpStatus"]
+        except Exception as e:
+            print("Failed: ", traceback.format_exc())
+            return jsonify(success=False, message="Internal server error"), 500
+    
+    def game_of_life_option_select_post_route(self, authProvider: AuthProvider)->tuple[Response, int]:
+        try:
+            tokenData = authProvider.check_token(request)
+            if tokenData == None:
+                return jsonify(success=False, message="Unauthorized", errorId="UNAUTHORIZED"), 401
+            if tokenData.get("username") == None:
+                return jsonify(success=False, message="Invalid token - Username field not found", errorId="UNAUTHORIZED"), 401
+            
+            resp = self.serve_event_post_request()
+            return jsonify(resp), resp["httpStatus"]
+
+        except Exception as e:
+            print("Failed: ", traceback.format_exc())
+            return jsonify(success=False, message="Internal server error"), 500

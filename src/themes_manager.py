@@ -8,6 +8,8 @@ from pydantic import BaseModel
 
 from typing import Any, cast
 
+from flask import request, jsonify, Response
+
 
 # Validation types
 class ThemeData_FontsDictType(BaseModel):
@@ -431,3 +433,123 @@ class ThemesManager:
                 "message": "Internal server error",
                 "httpStatus": 500
             }
+    
+    def publish_theme_route(self, authProvider: AuthProvider)->tuple[Response, int]:
+        try:
+            tokenData: AuthenticationToken | None = authProvider.check_token(request)
+            if tokenData == None:
+                return jsonify(success=False, message="Unauthorized", errorId="UNAUTHORIZED"), 401
+            if tokenData.get("username") == None:
+                return jsonify(success=False, message="Invalid token - Username field not found", errorId="UNAUTHORIZED"), 401
+            data = request.get_json()
+            themeName = data.get("themeName")
+            themeDescription = data.get("themeDescription")
+            themeData = data.get("themeData")
+
+            if themeName == None or themeDescription == None or themeData == None:
+                return jsonify(success=False, message="Bad request"), 400
+            
+            result = self.publishTheme(themeName, themeDescription, themeData, tokenData)
+
+            return jsonify(result), result['httpStatus']
+            
+        except Exception as e:
+            print("Failed", traceback.format_exc())
+            return jsonify(success=False, message="Internal server error"), 500
+    
+    def delete_theme_route(self, authProvider: AuthProvider)->tuple[Response, int]:
+        try:
+            tokenData: AuthenticationToken | None = authProvider.check_token(request)
+            if tokenData == None:
+                return jsonify(success=False, message="Unauthorized", errorId="UNAUTHORIZED"), 401
+            if tokenData.get("username") == None:
+                return jsonify(success=False, message="Invalid token - Username field not found", errorId="UNAUTHORIZED"), 401
+
+            data = request.get_json()
+            themeName = data.get("name")
+            if themeName == None:
+                return jsonify(success=False, message="No theme name"), 400
+            
+            result = self.deleteTheme(themeName, tokenData)
+            return jsonify(result), result["httpStatus"]
+
+        except Exception as e:
+            print("Failed", e)
+            return jsonify(success=False, message="Internal server error"), 500
+
+    def get_owned_route(self, authProvider: AuthProvider)->tuple[Response, int]:
+            try:
+                tokenData: AuthenticationToken | None = authProvider.check_token(request)
+                if tokenData == None:
+                    return jsonify(success=False, message="Unauthorized", errorId="UNAUTHORIZED"), 401
+                if tokenData.get("username") == None:
+                    return jsonify(success=False, message="Invalid token - Username field not found", errorId="UNAUTHORIZED"), 401
+                print(tokenData.get("id"))
+                
+                result = self.getOwned(tokenData)
+                return jsonify(result), result['httpStatus']
+            except Exception as e:
+                print("Failed", e)
+                return jsonify(success=False, message="Internal server error"), 500
+
+    def get_theme_info_route(self)->tuple[Response, int]:
+        try:
+            themeName = request.args.get("theme")
+            if themeName == None:
+                return jsonify(success=False, message="Theme name not provided"), 401
+            out = self.getThemeInfo(themeName)
+
+            return jsonify(out), out["httpStatus"]
+        except Exception as e:
+            print("Failed", traceback.format_exc())
+            return jsonify(success=False, message="Internal server error"), 500
+
+    def get_themes_route(self)->tuple[Response, int]:
+        try:
+            search_term = request.args.get('search')
+            
+            out = self.getThemes(search_term)
+            return jsonify(out), out["httpStatus"] 
+            
+        except Exception as e:
+            print("Failed", e)
+            return jsonify(success=False, message="Failed to fetch themes", errorId="THEMES_FETCH_FAILED"), 500
+    def star_theme_route(self, authProvider: AuthProvider)->tuple[Response, int]:
+        try:
+            tokenData: AuthenticationToken | None = authProvider.check_token(request)
+            if tokenData == None:
+                return jsonify(success=False, message="Unauthorized", errorId="UNAUTHORIZED"), 401
+            if tokenData.get("username") == None:
+                return jsonify(success=False, message="Invalid token - Username field not found", errorId="UNAUTHORIZED"), 401
+
+            requestData = request.get_json()
+            themeName = requestData.get("name")
+            
+            if themeName == None:
+                return jsonify(success=False, message="No theme name specified"), 400
+            out = self.starTheme(tokenData, themeName)
+            return jsonify(out), out["httpStatus"]
+
+
+            
+        except Exception as e:
+            print("Failed", traceback.format_exc())
+            return jsonify(success=False, message="Internal server error"), 500
+
+    def get_theme_starred_route(self, authProvider: AuthProvider)->tuple[Response, int]:
+        try:
+            tokenData = authProvider.check_token(request)
+            if tokenData == None:
+                return jsonify(success=False, message="Unauthorized", errorId="UNAUTHORIZED"), 401
+            if tokenData.get("username") == None:
+                return jsonify(success=False, message="Invalid token - Username field not found", errorId="UNAUTHORIZED"), 401
+
+            themeName = request.args.get("name")
+            if themeName == None:
+                return jsonify(success=False, message="Theme name not provided"), 400
+            out = self.getThemeStarred(tokenData, themeName)
+            return jsonify(out), out["httpStatus"]
+            
+        except Exception as e:
+            print("Failed", traceback.format_exc())
+            return jsonify(success=False, message="Internal server error"), 500

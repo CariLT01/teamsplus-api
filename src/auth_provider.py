@@ -20,15 +20,19 @@ from Crypto.Cipher import PKCS1_OAEP
 
 from flask import make_response, jsonify
 from flask import Request, request
+from flask import Response
 
 from typing import NoReturn
 from typing import cast
+from typing import Any
 
 SLEEP_DURATION_MIN = 0.7
 SLEEP_DURATION_MAX = 1.4
 
 TOKEN_EXPIRY_TIME = datetime.timedelta(days=7)
 TOKEN_EXPIRY_INT = (60 * 60 * 24) * 7
+
+
 
 class AuthProvider:
 
@@ -309,3 +313,58 @@ class AuthProvider:
                 "message": "Internal server error",
                 "httpStatus": 500
             }
+    def auth_route(self)->tuple[Response, int]:
+        try:
+            print("AUH AUTH AUTH AUTH", flush=True)
+            print("*")
+            data: Any = request.get_json()
+            username = data.get('username')
+            password = data.get('password')
+            transfer = data.get('transfer')
+
+            if (username == None or password == None):
+                return jsonify(success=False, message="Bad request"), 400
+
+            # Get the username in the JSON file
+            
+            out, tok = self.auth(username, password, transfer or False)
+            if tok:
+                resp = make_response(jsonify(out))
+                resp.set_cookie("jwt", tok, max_age=TOKEN_EXPIRY_INT, httponly=True, secure=False)
+                return resp, out['httpStatus']
+            return jsonify(out), out['httpStatus']
+        except Exception as e:
+            print("Failed: ", e)
+            return jsonify(success=False, message="Unknown error", errorId="UKW_ERR"), 500
+    
+    def register_route(self)->tuple[Response, int]:
+        try:
+            data = request.get_json()
+            username = data.get('username')
+            password = data.get('password')
+            captcha = data.get('captcha')
+
+            if username == None or password == None or captcha == None:
+                return jsonify(success=False, message="Bad request"), 400
+
+            auth = self.register(username, password, captcha)
+            
+
+            return jsonify(auth), auth['httpStatus']
+        except Exception as e:
+            print("it fucking Failed: ", e)
+            return jsonify(success=False, message="Unknown error", errorId="UKW_ERR"), 500
+
+    def search_users_route(self)->tuple[Response, int]:
+        try:
+            search_term = request.args.get("search")
+            if search_term == None:
+                return jsonify(success=False, message="No search term provided"), 400
+
+            out = self.search_users(search_term)
+            return jsonify(out), out["httpStatus"]
+        except Exception as e:
+            print("Failed: ", traceback.format_exc())
+            return jsonify(success=False, message="Internal server error"), 500
+
+__all__ = ['AuthProvider']

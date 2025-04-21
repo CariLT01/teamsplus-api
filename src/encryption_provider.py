@@ -1,5 +1,8 @@
 from src.db_provider import DatabaseProvider
 from src.custom_types import *
+from src.auth_provider import AuthProvider
+
+from flask import Response, request, jsonify
 
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
@@ -225,3 +228,58 @@ class EncryptionProvider:
                 "message": "Internal server error",
                 "httpStatus": 500
             }
+    def encrypt_route(self, authProvider: AuthProvider)->tuple[Response, int]:
+        try:
+            tokenData = authProvider.check_token(request)
+            if tokenData == None:
+                return jsonify(success=False, message="Unauthorized", errorId="UNAUTHORIZED"), 401
+            if tokenData.get("username") == None:
+                return jsonify(success=False, message="Invalid token - Username field not found", errorId="UNAUTHORIZED"), 401
+            requestData = request.get_json()
+
+            dest_user_id = requestData.get("destination")
+            body = requestData.get("body")
+            password = requestData.get("pwd")
+
+            if (dest_user_id == None or body == None or password == None):
+                return jsonify(success=False, message="Bad request"), 400
+
+            output = self.encrypt(dest_user_id, body, password, tokenData)
+
+            return jsonify(output), output["httpStatus"]
+
+
+        except Exception as e:
+            print("Failed: ", traceback.format_exc())
+            return jsonify(success=False, message="Internal server error"), 500
+
+
+    def decrypt_route(self, authProvider: AuthProvider)->tuple[Response, int]:
+
+        try:
+            tokenData = authProvider.check_token(request)
+            if tokenData == None:
+                return jsonify(success=False, message="Unauthorized", errorId="UNAUTHORIZED"), 401
+            if tokenData.get("username") == None:
+                return jsonify(success=False, message="Invalid token - Username field not found", errorId="UNAUTHORIZED"), 401
+            requestData = request.get_json()
+
+            
+            body = requestData.get("body")
+            password = requestData.get("pwd")
+            signature = requestData.get("signature")
+            iv = requestData.get("iv")
+            key = requestData.get("key")
+            author = requestData.get("author")
+
+            if (body == None or password == None or signature == None or iv == None or key == None or author == None):
+                return jsonify(success=False, message="Bad request"), 400
+
+            output = self.decrypt(signature, body, iv, key, tokenData, password, author)
+
+            return jsonify(output), output["httpStatus"]
+
+
+        except Exception as e:
+            print("Failed: ", traceback.format_exc())
+            return jsonify(success=False, message="Internal server error"), 500
