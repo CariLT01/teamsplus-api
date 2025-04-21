@@ -4,11 +4,11 @@ const path = require('path');
 module.exports = {
     mode: 'production',
     entry: {
-        'static/login/script': './static/login/script.ts',
-        'static/register/script': './static/register/script.ts',
-        'static/dashboard/script': './static/dashboard/script.ts',
-        'static/home/script': './static/home/script.ts',
-        'static/game_of_life/src/bundle': "./static/game_of_life/src/main.ts"
+        'static/js/login/script': './src/client/login/script.ts',
+        'static/js/register/script': './src/client/register/script.ts',
+        'static/js/dashboard/script': './src/client/dashboard/script.ts',
+        'static/js/home/script': './src/client/home/script.ts',
+        'static/js/game_of_life/src/bundle': "./src/client/game_of_life/main.ts"
     },
     output: {
         filename: '[name].js',

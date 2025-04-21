@@ -189,4 +189,13 @@ window.onload = function() {
     refreshVersions();
     getFileInfo();
     versionDownloadHandler();
+
+    const a = document.querySelector("#download-latest");
+    if (a) {
+        a.addEventListener("click", () => {
+            downloadLatest();
+        })
+    } else {
+        throw new Error("Button is null");
+    }
 }
