@@ -5,4 +5,5 @@ src/__pycache__/
 .vscode/
 src/game_of_life/__pycache__/
 databases/users.db
+databases/
 static/js/

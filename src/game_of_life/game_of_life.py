@@ -2,6 +2,7 @@ from flask import request, Response, jsonify
 from src.auth_provider import AuthProvider
 
 from src.custom_types import *
+from src.databaseHelper import Database
 
 import random
 import traceback
@@ -20,6 +21,40 @@ class GameOfLife:
 
     def __init__(self, authProvider: AuthProvider):
         self.authProvider = authProvider
+        self.db = Database("databases/people.db")
+        self.db.create_table_if_not_exists("people", {
+            "id": "INTEGER PRIMARY KEY",
+            "name": "VARCHAR(20)",
+            "birthday": "INTERGER NOT NULL",
+            "creator": "NTEGER NOT NULL"
+        })
+
+        self.db.create_table_if_not_exists("skill", {
+            "id": "INTEGER PRIMARY KEY",
+            "piano": "INTEGER NOT NULL",
+            "soccer": "INTERGER NOT NULL",
+            "basketball": "NTEGER NOT NULL",
+            "dance": "NTEGER NOT NULL",
+            "sing": "NTEGER NOT NULL",
+            "study": "NTEGER NOT NULL",
+            "guitar": "NTEGER NOT NULL",
+        })
+
+        self.db.create_table_if_not_exists("relationships", {
+            "id": "INTEGER NOT NULL",
+            "friend": "INTEGER NOT NULL",
+            "friendship": "INTERGER NOT NULL",
+            "days": "NTEGER NOT NULL"
+        })
+
+        #c = self.db.database.cursor()
+        #c.execute('SELECT * WHERE id = ?', (5,))
+        #c.fetchone()
+        #c.close()
+
+        
+
+
 
     def serve_event_get_request(self) -> GameOfLife_HTTPGetEventReturnType:
         """
