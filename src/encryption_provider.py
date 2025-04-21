@@ -33,6 +33,7 @@ class EncryptionProvider:
         '''
         body.encode().decode() # Ensure invalid characters cause error
         myUserId = tokenData["id"]
+        print(f"My user id: {myUserId}")
         my_user_data: AuthenticationDataReturnType | None = self.db_provider.read_user_data(id=myUserId)
         if my_user_data == None:
             raise Exception("User data not found")

@@ -125,6 +125,7 @@ class AuthProvider:
             user_data: AuthenticationDataReturnType | None = self.db_provider.read_user_data(username=username)
             if (user_data == None):
                 time.sleep(random.uniform(SLEEP_DURATION_MIN, SLEEP_DURATION_MAX))
+                print(f"Username not found!")
                 return {
                     'success': False,
                     'message': "Invalid credentials",
@@ -134,6 +135,7 @@ class AuthProvider:
             hashed_db_password: str = user_data["password"]
 
             if bcrypt.checkpw(password.encode(), hashed_db_password.encode()) == False:
+                print(f"Incorrect password")
                 return {
                     'success': False,
                     'message': "Invalid credentials",
@@ -187,36 +189,40 @@ class AuthProvider:
         except jwt.InvalidTokenError:
             print("Invalid")
             return None
-    def register(self, username: str, password: str, captcha: str) -> HTTPRequestResponseDict:
+    def register(self, username: str, password: str, captcha: str, verifyCaptcha: bool = True) -> HTTPRequestResponseDict:
         '''
         Registers a new user
         '''
         try:
             if len(username) > 31:
+                print(f"Username is too long!")
                 return {
                     'success': False,
                     'message': "Username too long",
                     'httpStatus': 400
                 }
             if self.is_valid_string(username) == False:
+                print(f"Username invalid characters!")
                 return {
                     'success': False,
                     'message': "Username can only contain letters, numbers, and underscores.",
                     'httpStatus': 400
                 }
-            if self.verify_captcha(captcha) == False:
+            if verifyCaptcha == True and self.verify_captcha(captcha) == False:
                 return {
                     'success': False,
                     'message': "Invalid CAPTCHA",
                     'httpStatus': 400
                 }
             if len(username) < 4:
+                print(f"Username too short!")
                 return {
                     'success': False,
                     'message': "Username must be atleast 4 characters",
                     'httpStatus': 400
                 }
             if len(password) < 6:
+                print(f"Password too short!")
                 return {
                     'success': False,
                     'message': "Password must be atleast 6 characters",
@@ -225,6 +231,7 @@ class AuthProvider:
             username = username.lower()
             data: AuthenticationDataReturnType | None = self.db_provider.read_user_data(username=username)
             if (data != None):
+                print(f"Username i use")
                 return {
                     'success': False,
                     'message': "Username in use",
@@ -241,7 +248,7 @@ class AuthProvider:
                 "iv": "b"
             })
             self.create_public_and_private_key(password, cast(AuthenticationDataReturnType, self.db_provider.read_user_data(username=username)), force=True)
-
+            print(f"New user OK")
             return {
                 'success': True,
                 'message': "OK",

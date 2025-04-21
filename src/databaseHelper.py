@@ -18,6 +18,9 @@ class Database:
         Loads the databases
         Creates tables if needed
         '''
+        print("****** DB HELPER *********")
+        print("New instance of Database class has been created!")
+        print("****** DB HELPER *********")
         self.database = sqlite3.connect(database_path, check_same_thread=False)
     
     def create_table_if_not_exists(self, table_name: str, columns: dict[str, str])->None:
@@ -36,6 +39,9 @@ class Database:
         """
         Creates a new cursor, executes the command, and closes the cursor.
         """
+        print("DB HELPER - cursor am")
+        print(f"DB HELPER: Command: {command}")
+        print(f"DB HELPER: Params: {params}")
         cursor = self.database.cursor()
         cursor.execute(command, params)
         cursor.close()
@@ -44,6 +50,9 @@ class Database:
         Creates a new cursor, executes the command, BUT DOES NOT CLOSE THE CURSOR.
         The cursor will have to be MANUALLY closed to prevent memory leak.
         """
+        print("DB HELPER - return cursor")
+        print(f"DB HELPER: Command: {command}")
+        print(f"DB HELPER: Params: {params}")
         cursor = self.database.cursor()
         cursor.execute(command, params)
         return cursor
@@ -58,7 +67,9 @@ class Database:
         cursor = self.execute_command_and_return_cursor(command, (queryValue,))
     
         row_data: tuple[Any, ...] | None = cursor.fetchone()
-        if row_data == None: return None
+        if row_data == None:
+            print("DB HELPER: Read failed: no data matches query")
+            return None
 
         dict_data:dict[str, Any] = {}
         i = 0

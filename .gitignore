@@ -6,3 +6,5 @@ src/__pycache__/
 src/game_of_life/__pycache__/
 databases/users.db
 static/js/
+tests/__pycache__
+__pycache__/

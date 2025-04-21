@@ -30,15 +30,17 @@ class DatabaseProvider:
             "stars": "INT NOT NULL"
         })
                                            
-                                           
-                                           
+    def close(self) -> None:
+
+        self.db.database.close()                       
+
 
 
     def read_user_data(self, **kwargs: Any) -> AuthenticationDataReturnType | None:
         if not kwargs:
             return None
         queryKey, queryValue = next(iter(kwargs.items()))
-        return cast(AuthenticationDataReturnType, self.db.read_row_from_table("users", queryKey, queryValue, ["id", "username", "favorites", "ownedThemes", "password", "publicKey", "privateKey", "iv"]))
+        return cast(AuthenticationDataReturnType | None, self.db.read_row_from_table("users", queryKey, queryValue, ["id", "username", "favorites", "ownedThemes", "password", "publicKey", "privateKey", "iv"]))
 
     def change_user_data(self, values: dict[str, Any], **kwargs: Any) -> None:
         if not kwargs: return None
