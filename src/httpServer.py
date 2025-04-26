@@ -12,6 +12,8 @@ from typing import Callable
 from typing import Union
 from typing import Any
 
+from src.config import *
+
 ViewReturnType = Union[
     Response, str, bytes, list[Any], dict[str, Any],
     tuple[Any, int], tuple[Any, int, dict[str, Any]]
@@ -20,8 +22,8 @@ ViewReturnType = Union[
 class Flask_HTTPServer:
     def __init__(self, cors: bool = True, origins: list[str]=["https://teams.microsoft.com"]) -> None:
         
-        templates_path = os.path.abspath('templates')
-        static_path = os.path.abspath('static')
+        templates_path = os.path.abspath(f'{ABSOLUTE_PATH}templates')
+        static_path = os.path.abspath(f'{ABSOLUTE_PATH}static')
         print(templates_path, static_path)
         self.app = Flask(__name__, template_folder=templates_path, static_folder=static_path)
 

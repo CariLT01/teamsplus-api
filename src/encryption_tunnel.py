@@ -11,13 +11,14 @@ from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey, RSAPubl
 from typing import Any, cast
 from flask import jsonify, Response, request
 
+from src.config import *
 
 class EncryptionTunnel:
     def __init__(self) -> None:
         self.publicKey = self._load_public_key()
         self.privateKey = self._load_private_key()
     def _load_private_key(self) -> RSAPrivateKey:
-        with open("private_key.pem", "rb") as f:
+        with open(f"{ABSOLUTE_PATH}private_key.pem", "rb") as f:
             private_key = serialization.load_pem_private_key(
                 f.read(),
                 password=b"ENCRYPTION_TUNNEL_3"  # Same password used when saving
@@ -26,7 +27,7 @@ class EncryptionTunnel:
         return cast(RSAPrivateKey, private_key)
         
     def _load_public_key(self) -> RSAPublicKey:
-        with open("public_key.pem", "rb") as f:
+        with open(f"{ABSOLUTE_PATH}public_key.pem", "rb") as f:
             return cast(RSAPublicKey, serialization.load_pem_public_key(f.read()))
 
     def encryption_handshake_route(self) -> tuple[Response, int]:

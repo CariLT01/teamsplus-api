@@ -3,6 +3,7 @@ from src.auth_provider import AuthProvider
 
 from src.custom_types import *
 from src.databaseHelper import Database
+from src.config import *
 
 import random
 import traceback
@@ -21,7 +22,7 @@ class GameOfLife:
 
     def __init__(self, authProvider: AuthProvider):
         self.authProvider = authProvider
-        self.db = Database("databases/people.db")
+        self.db = Database(f"{ABSOLUTE_PATH}databases/people.db")
         self.db.create_table_if_not_exists("people", {
             "id": "INTEGER PRIMARY KEY",
             "name": "VARCHAR(20)",

@@ -1,4 +1,5 @@
-const API_ENDPOINT = "";
+
+
 async function exportKeyToPEM(
     key: CryptoKey,
     type: "public" | "private" = "public"
@@ -29,16 +30,6 @@ function base64toBytes(b64: string) {
     return bytes;  // Uint8Array of decoded bytes
 }
 
-async function waitForValue<T>(ref: T | null, check: () => boolean = () => ref !== null): Promise<T> {
-    return new Promise<T>((resolve) => {
-        const interval = setInterval(() => {
-            if (check()) {
-                clearInterval(interval);
-                resolve(ref as T);  // type assertion since ref is no longer null
-            }
-        }, 100); // check every 100ms
-    });
-}
 
 export class SafeTunnel {
 
@@ -49,7 +40,12 @@ export class SafeTunnel {
     constructor() {
         this.asyncInit();
     }
-
+    private async waitForKey(): Promise<boolean> {
+        while (this.aesKey == null || this.aesKey == undefined) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        return true;
+    }
 
     private async asyncInit() {
         await this.createRSAKeypair();
@@ -73,6 +69,10 @@ export class SafeTunnel {
 
     private async getSharedAESKey() {
         console.log("Attempt to establish safe-tunnel connection");
+        //const b = true;
+        //if (b == false) {
+        //    throw new Error("Server authenticity unproven, client refused connection");
+        //}
         const resp = await fetch(`${API_ENDPOINT}/api/v1/safe_tunnel/handshake`, {
             method: 'POST',
             body: JSON.stringify({
@@ -115,43 +115,55 @@ export class SafeTunnel {
     }
 
     async safeTunnelEncrypt(content: string) {
-        console.log("Wait for AES finish creation");
-        await waitForValue(this.aesKey, () => this.aesKey !== null);
-        console.log("AES Creation is done");
-        console.log("AES key:", this.aesKey);
-        const iv = crypto.getRandomValues(new Uint8Array(12));  // 12-byte IV for GCM
-
-        const data = new TextEncoder().encode(content);
-
-        const ciphertext = await crypto.subtle.encrypt(
-            { name: "AES-GCM", iv: iv },
-            this.aesKey,
-            data
-        );
-
-        const b64 = btoa(String.fromCharCode(...new Uint8Array(ciphertext)));
-        const b642 = btoa(String.fromCharCode(...new Uint8Array(iv)));
-        return {
-            iv: b642,
-            ct: b64,
-            k: this.aesKeyString,
+        try {
+            console.log("Wait for AES finish creation");
+            await this.waitForKey();
+            console.log("AES Creation is done");
+            console.log("AES key:", this.aesKey);
+            const iv = crypto.getRandomValues(new Uint8Array(12));  // 12-byte IV for GCM
+    
+            const data = new TextEncoder().encode(content);
+    
+            const ciphertext = await crypto.subtle.encrypt(
+                { name: "AES-GCM", iv: iv },
+                this.aesKey,
+                data
+            );
+    
+            const b64 = btoa(String.fromCharCode(...new Uint8Array(ciphertext)));
+            const b642 = btoa(String.fromCharCode(...new Uint8Array(iv)));
+            return {
+                iv: b642,
+                ct: b64,
+                k: this.aesKeyString,
+            }
+        } catch (e) {
+            alert("Safe-tunnel encryption failed. Please refresh and try again.");
+            throw new Error(`Safe-tunnel encryption failed: ${e}`)
         }
+
     }
 
     async safeTunnelDecrypt(ct: string, iv: string) {
-        const algorithm = {
-            name: "AES-GCM",
-            iv: base64toBytes(iv),  // Initialization Vector
-        };
+        try {
+            const algorithm = {
+                name: "AES-GCM",
+                iv: base64toBytes(iv),  // Initialization Vector
+            };
+    
+            const decryptedData = await window.crypto.subtle.decrypt(
+                algorithm,
+                this.aesKey,
+                base64toBytes(ct)
+            );
+            const decoder = new TextDecoder();
+            const plain = decoder.decode(decryptedData);
+            return JSON.parse(plain);
+        } catch (e) {
+            alert("Safe-tunnel decryption failed. Please refresh and try again.");
+            throw new Error(`Safe-tunnel decryption failed: ${e}`)
+        }
 
-        const decryptedData = await window.crypto.subtle.decrypt(
-            algorithm,
-            this.aesKey,
-            base64toBytes(ct)
-        );
-        const decoder = new TextDecoder();
-        const plain = decoder.decode(decryptedData);
-        return JSON.parse(plain);
 
     }
 

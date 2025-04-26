@@ -57,7 +57,7 @@ class MainApp:
 
     def __init__(self) -> None:
         self.httpServer = Flask_HTTPServer()
-        self.db_provider = DatabaseProvider()
+        self.db_provider = DatabaseProvider(db_path=f"{ABSOLUTE_PATH}databases/users.db")
         self.authProvider = AuthProvider(self.db_provider)
         self.themeManager = ThemesManager(self.db_provider)
         self.encryptionProvider = EncryptionProvider(self.db_provider)
@@ -112,9 +112,10 @@ class MainApp:
 
         self.httpServer.run()
 
-
+main = MainApp()
+main.initialize()
+app = main.httpServer.app  # expose it at the top level slo production can see it
 if __name__ == '__main__':
 
-    app = MainApp()
-    app.initialize()
-    app.run()
+
+    main.run()
