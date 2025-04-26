@@ -1,6 +1,7 @@
 from src.db_provider import DatabaseProvider
 from src.custom_types import *
 from src.config import JWT_SECRET_KEY, CAPTCHA_SECRET
+from src.encryption_tunnel import EncryptionTunnel
 
 import time
 import random
@@ -11,6 +12,8 @@ import traceback
 import requests
 import re
 import hashlib
+import base64
+import json
 
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
@@ -41,6 +44,7 @@ class AuthProvider:
         Authentication class
         '''
         self.db_provider = db_provider
+        self.safe_tunnel = EncryptionTunnel()
     
     def generateToken(self, userData: AuthenticationDataReturnType, transfer: bool)->tuple[HTTPRequestResponseDict, str | None]:
         '''
@@ -322,12 +326,21 @@ class AuthProvider:
             }
     def auth_route(self)->tuple[Response, int]:
         try:
+            requestData = request.get_json()
+            iv: str | None = requestData.get("iv")
+            ct: str | None = requestData.get("ct")
+            k: str | None = requestData.get("k")
+            if (iv == None or ct == None or k == None):
+                return jsonify(success=False, message="Bad request"), 400
+            decrypted = self.safe_tunnel.decrypt_body(base64.b64decode(ct.encode()), base64.b64decode(iv.encode()), base64.b64decode(k.encode()))
+            djson = json.loads(decrypted)
+
             print("AUH AUTH AUTH AUTH", flush=True)
             print("*")
-            data: Any = request.get_json()
-            username = data.get('username')
-            password = data.get('password')
-            transfer = data.get('transfer')
+
+            username = djson.get('username')
+            password = djson.get('password')
+            transfer = djson.get('transfer')
 
             if (username == None or password == None):
                 return jsonify(success=False, message="Bad request"), 400
@@ -346,10 +359,17 @@ class AuthProvider:
     
     def register_route(self)->tuple[Response, int]:
         try:
-            data = request.get_json()
-            username = data.get('username')
-            password = data.get('password')
-            captcha = data.get('captcha')
+            requestData = request.get_json()
+            iv: str | None = requestData.get("iv")
+            ct: str | None = requestData.get("ct")
+            k: str | None = requestData.get("k")
+            if (iv == None or ct == None or k == None):
+                return jsonify(success=False, message="Bad request"), 400
+            decrypted = self.safe_tunnel.decrypt_body(base64.b64decode(ct.encode()), base64.b64decode(iv.encode()), base64.b64decode(k.encode()))
+            djson = json.loads(decrypted)
+            username = djson.get('username')
+            password = djson.get('password')
+            captcha = djson.get('captcha')
 
             if username == None or password == None or captcha == None:
                 return jsonify(success=False, message="Bad request"), 400

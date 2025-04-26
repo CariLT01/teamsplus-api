@@ -16,6 +16,8 @@ from src.encryption_provider import EncryptionProvider
 from src.config import *
 from src.game_of_life.game_of_life import GameOfLife
 from src.httpServer import Flask_HTTPServer
+from src.encryption_tunnel import EncryptionTunnel
+from src.certificate import cert_route
 import src.versions as versions
 
 import src.static_pages as static_pages
@@ -60,6 +62,7 @@ class MainApp:
         self.themeManager = ThemesManager(self.db_provider)
         self.encryptionProvider = EncryptionProvider(self.db_provider)
         self.gameOfLifeProvider = GameOfLife(self.authProvider)
+        self.encryptionTunnelProvider = EncryptionTunnel()
     
     def initialize(self) -> None:
         self.add_routes()
@@ -100,6 +103,10 @@ class MainApp:
         # GOL API routes
         self.httpServer.add_route("/api/v1/game_of_life/get_event", self.gameOfLifeProvider.game_of_life_get_event_route, methods=["GET"])
         self.httpServer.add_route("/api/v1/game_of_life/option_select_post", lambda: self.gameOfLifeProvider.game_of_life_option_select_post_route(self.authProvider), methods=["POST"])
+
+        # Encryption tunnel API routes
+        self.httpServer.add_route("/api/v1/safe_tunnel/handshake", self.encryptionTunnelProvider.encryption_handshake_route, methods=['POST'])
+        self.httpServer.add_route("/cert", cert_route, methods=['GET'])
 
     def run(self) -> None:
 

@@ -1,6 +1,7 @@
 from src.db_provider import DatabaseProvider
 from src.custom_types import *
 from src.auth_provider import AuthProvider
+from src.encryption_tunnel import EncryptionTunnel
 
 from flask import Response, request, jsonify
 
@@ -18,6 +19,7 @@ from Crypto.Hash import SHA256
 import hashlib
 import base64
 import traceback
+import json
 
 class EncryptionProvider:
 
@@ -26,6 +28,7 @@ class EncryptionProvider:
         Encryption provider
         '''
         self.db_provider = db_provider
+        self.safe_tunnel = EncryptionTunnel()
     
     def encrypt(self, to_user_ids: list[int], body: str, password: str, tokenData: AuthenticationToken) -> EncryptionProviderResultDict:
         '''
@@ -236,14 +239,31 @@ class EncryptionProvider:
                 return jsonify(success=False, message="Unauthorized", errorId="UNAUTHORIZED"), 401
             if tokenData.get("username") == None:
                 return jsonify(success=False, message="Invalid token - Username field not found", errorId="UNAUTHORIZED"), 401
+            
             requestData = request.get_json()
 
-            dest_user_id = requestData.get("destination")
-            body = requestData.get("body")
-            password = requestData.get("pwd")
+
+
+            iv: str | None = requestData.get("iv")
+            ct: str | None = requestData.get("ct")
+            k: str | None = requestData.get("k")
+
+            #dest_user_id = requestData.get("destination")
+            #body = requestData.get("body")
+            #password = requestData.get("pwd")
+
+            if (iv == None or ct == None or k == None):
+                return jsonify(success=False, message="Bad request"), 400
+            
+            decrypted = self.safe_tunnel.decrypt_body(base64.b64decode(ct.encode()), base64.b64decode(iv.encode()), base64.b64decode(k.encode()))
+            djson = json.loads(decrypted)
+
+            dest_user_id = djson.get("destination")
+            body = djson.get("body")
+            password = djson.get("pwd")
 
             if (dest_user_id == None or body == None or password == None):
-                return jsonify(success=False, message="Bad request"), 400
+                return jsonify(success=False, message="Bad request: after decryption"), 400 
 
             output = self.encrypt(dest_user_id, body, password, tokenData)
 
@@ -265,20 +285,36 @@ class EncryptionProvider:
                 return jsonify(success=False, message="Invalid token - Username field not found", errorId="UNAUTHORIZED"), 401
             requestData = request.get_json()
 
+            iv: str | None = requestData.get("iv")
+            ct: str | None = requestData.get("ct")
+            k: str | None = requestData.get("k")
+
+
+            if (iv == None or ct == None or k == None or k == None):
+                return jsonify(success=False, message="Bad request"), 400
+
             
-            body = requestData.get("body")
-            password = requestData.get("pwd")
-            signature = requestData.get("signature")
-            iv = requestData.get("iv")
-            key = requestData.get("key")
-            author = requestData.get("author")
+            decrypted = self.safe_tunnel.decrypt_body(base64.b64decode(ct.encode()), base64.b64decode(iv.encode()), base64.b64decode(k.encode()))
+            djson = json.loads(decrypted)
+
+            body = djson.get("body")
+            password = djson.get("pwd")
+            signature = djson.get("signature")
+            iv = djson.get("iv")
+            key = djson.get("key")
+            author = djson.get("author")
 
             if (body == None or password == None or signature == None or iv == None or key == None or author == None):
                 return jsonify(success=False, message="Bad request"), 400
 
             output = self.decrypt(signature, body, iv, key, tokenData, password, author)
+            enc: bytes
+            eiv: bytes
+            enc, eiv = self.safe_tunnel.encrypt_body(json.dumps(output).encode(), base64.b64decode(k))
 
-            return jsonify(output), output["httpStatus"]
+
+
+            return jsonify(ct=base64.b64encode(enc).decode(), iv=base64.b64encode(eiv).decode()), output["httpStatus"]
 
 
         except Exception as e:

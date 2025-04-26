@@ -1,3 +1,5 @@
+import { SafeTunnel } from "../safeTunnel";
+
 const API_ENDPOINT: string = "";
 const STORAGE_KEY: string = "teamsplus_api_token";
 
@@ -18,7 +20,7 @@ function submitButtonHandler() {
     throw new Error("One or many elements are null");
   }
 
-  loginSubmitButton.addEventListener("click", (event) => {
+  loginSubmitButton.addEventListener("click", async (event) => {
     event.preventDefault();
 
     const usernameValue: string = usernameField.value;
@@ -26,15 +28,20 @@ function submitButtonHandler() {
 
     // Post request
     showLoader();
+
+    const safeTunnel = new SafeTunnel();
+    const b = JSON.stringify({
+      username: usernameValue,
+      password: passwordValue,
+    });
+    const e = await safeTunnel.safeTunnelEncrypt(b);
+
     fetch(`/api/v1/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        username: usernameValue,
-        password: passwordValue,
-      })
+      body: JSON.stringify(e)
     })
       .then(response => {
         console.log(response);

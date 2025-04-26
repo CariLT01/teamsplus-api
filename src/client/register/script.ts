@@ -1,6 +1,6 @@
 
+import { SafeTunnel } from "../safeTunnel";
 
-const API_ENDPOINT3: string = "";
 
 function showLoader2() {
   const loader: HTMLDivElement | null = document.querySelector("#loader");
@@ -20,7 +20,7 @@ function submitButtonHandler2() {
     throw new Error("One or many elements are null");
   }
 
-  loginSubmitButton.addEventListener("click", (event) => {
+  loginSubmitButton.addEventListener("click", async (event) => {
     event.preventDefault();
 
     const usernameValue: string = usernameField.value;
@@ -46,16 +46,19 @@ function submitButtonHandler2() {
     //hiddenInput.remove();
     // Post request
     showLoader2();
+    const safeTunnel = new SafeTunnel();
+    const b = JSON.stringify({
+      username: usernameValue,
+      password: passwordValue,
+      captcha: token
+    });
+    const e = await safeTunnel.safeTunnelEncrypt(b);
     fetch(`/api/v1/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        username: usernameValue,
-        password: passwordValue,
-        captcha: token
-      })
+      body: JSON.stringify(e)
     })
       .then(response => {
         console.log(response);
