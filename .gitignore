@@ -1,0 +1,11 @@
+node_modules/
+src/__pycache__/
+.venv/
+.mypy_cache/
+.vscode/
+src/game_of_life/__pycache__/
+databases/users.db
+databases/
+static/js/
+tests/__pycache__
+__pycache__/

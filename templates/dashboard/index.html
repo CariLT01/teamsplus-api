@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+
+    <style>
+        .normal-button {
+            background-color: #000;
+            border: none;
+            color: white;
+            border-radius: 1000000px;
+            padding: 5px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s, border 0.3s;
+            border: 1px solid rgba(0, 0, 0, 0);
+        }
+        
+        .normal-button:hover {
+            background-color: white;
+            color: black;
+            border: 1px solid rgba(0, 0, 0, 0.5);
+            box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        }
+    </style>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+        * {
+            font-family: "Inter", sans-serif;
+        }
+        
+        .new-theme {
+            font-family: "Inter", sans-serif;
+            width: 20vw;
+            height: auto;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+            margin: 15px;
+        }
+        
+        .new-theme-field {
+            font-family: "Inter", sans-serif;
+            width: 90%;
+            padding: 5px 5px;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            margin: 5px 0;
+            resize: none;
+            transition: 0.3s border;
+        }
+        
+        .new-theme-field:focus {
+            outline: none;
+            border: 1px solid rgba(0, 0, 0, 0.7);
+        }
+        
+        .center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .publish-button {
+            margin: 10px;
+        }
+    </style>
+    <style>
+        .my-themes {
+            height: 100%;
+            padding: 10px 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 300px));
+            /* 5 cards per row */
+            gap: 10px;
+        }
+        
+        .published-theme {
+            height: 190px;
+            /* vertical layout */
+            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+            display: flex;
+            flex-direction: column;
+            padding: 5px;
+            border-radius: 6px;
+        }
+        
+        #theme-name {
+            margin: 0;
+        }
+        
+        #theme-desc {
+            flex-grow: 1;
+            margin: 0;
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        #theme-desc::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            /* how much of the fade effect you want */
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #fff);
+            pointer-events: none;
+        }
+    </style>
+    <style>
+        h2 {
+            margin-left: 20px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="title">Account Dashboard</h1>
+    <div class="new-theme">
+        <form action="">
+            <div class="center">
+                <h3>Publish theme</h3>
+                <input type="text" id="theme-name" class="new-theme-field" placeholder="Theme name" required>
+                <textarea name="" id="theme-desc" class="new-theme-field" placeholder="Theme description" required rows="3"></textarea>
+                <input type="text" id="theme-data" class="new-theme-field" placeholder="Theme data" required>
+
+                <button type="submit" id="publish-theme-btn" class="normal-button publish-button">Publish</button>
+            </div>
+
+        </form>
+    </div>
+    <h2 class="subtitle">Published on the store</h2>
+    <div class="my-themes" id="my-themes">
+    </div>
+</body>
+<script src="{{ url_for('static', filename='js/dashboard/script.js') }}"></script>
+
+</html>

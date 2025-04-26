@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamsPlus</title>
+
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            margin: 0;
+        }
+
+        .navbar {
+            width: 100%;
+            top: 0;
+            left: 0;
+            height: 5vh;
+            position: sticky;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+            background-color: rgba(255,255,255,0.5);
+            z-index: 999;
+
+            backdrop-filter: blur(6px);
+            animation: main-fade-in 1s ease-out forwards;
+            animation-delay: 0.5s;
+            opacity: 0;
+        }
+
+        .navbar ul {
+            display: flex;
+            height: 100%;
+            margin: 0;
+
+        }
+
+        .navbar li {
+            list-style-type: none;
+            height: 100%;
+            align-items: center;
+            display: flex;
+            flex-direction: row;
+
+
+        }
+
+        .navbar a {
+            justify-content: center;
+            align-items: center;
+            color: black;
+            font-size: 1.1rem;
+            text-decoration: none;
+            font-weight: 500;
+            width: 100%;
+            height: 100%;
+            line-height: 5vh;
+            padding: 0 3vw;
+            border-bottom: 3px solid rgba(0, 0, 0, 0);
+        }
+
+        .navbar a:hover {
+            transition: 0.3s;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-bottom: 2px solid rgba(0, 0, 0, 0.5);
+        }
+
+        /* HOME PAGE */
+
+        @keyframes main-fade-in {
+            0% {
+                opacity: 0;
+                transform: translateY(-25%);
+                filter: blur(10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0);
+            }
+        }
+
+        @keyframes section-fade-in {
+            0% {
+                opacity: 0;
+                filter: blur(5px);
+            }
+
+            100% {
+                opacity: 1;
+                filter: blur(0);
+            }
+        }
+
+        @keyframes section-fade-in-inverted-img {
+            0% {
+                opacity: 0;
+                filter: blur(5px) invert(100%);
+            }
+
+            100% {
+                opacity: 1;
+                filter: blur(0) invert(100%);
+            }
+        }
+
+        .home-page {
+            margin-top: 10vh;
+            margin-bottom: 3vh;
+            animation: main-fade-in 1s ease-out;
+        }
+
+        .main-title {
+            width: 100%;
+            text-align: center;
+            margin: 1vh 0;
+            letter-spacing: 1px;
+        }
+
+        .description {
+            width: max(400px, 35vw);
+            text-align: center;
+            font-weight: 500;
+            padding: 0 15px;
+        }
+
+        .horizontal-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .actions {
+            display: flex;
+        }
+
+        .btn-normal {
+            padding: 10px 30px;
+            cursor: pointer;
+            background-color: black;
+            color: white;
+            border-radius: 10000000px;
+            border: 1px solid rgba(0, 0, 0, 0);
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-normal:hover {
+            border: 1px solid rgb(0, 0, 0);
+            color: black;
+            background-color: white;
+        }
+
+        .btn-inverted {
+            padding: 10px 30px;
+            cursor: pointer;
+            background-color: white;
+            color: black;
+            border-radius: 10000000px;
+            border: 1px solid black;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-inverted:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-with-icon {
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-with-icon img {
+            width: 16px;
+            height: 16px;
+            margin-left: 5px;
+        }
+
+
+
+        .download {
+            padding: 10px 30px;
+
+
+            cursor: pointer;
+            margin: 10px;
+
+        }
+
+        .top-space {
+            margin-top: 2vw;
+        }
+
+        /* ABOUT SECTION */
+
+        .about {
+            background-color: black;
+            color: white;
+            padding: 0.5vh 2vw;
+
+
+
+        }
+
+        .section-title {
+            letter-spacing: 1px;
+            font-weight: 600;
+
+        }
+
+        .about * {
+            opacity: 0;
+            animation: section-fade-in 1s ease-out forwards;
+            animation-delay: 0.25s;
+        }
+
+        .about p {
+            font-weight: 350;
+
+        }
+
+        .about li {
+            margin: 3px 0;
+
+        }
+
+        .about li {
+            font-weight: 350;
+        }
+
+        .max-width {
+            max-width: max(400px, 60vw);
+        }
+
+        /*Downloads section*/
+
+        .downloads {
+            padding: 0.5vh 2vw;
+        }
+
+        .downloads * {
+            opacity: 0;
+            animation: section-fade-in 1s ease-out forwards;
+            animation-delay: 0.6s;
+        }
+
+        .downloads p {
+            font-weight: 350;
+        }
+
+        .version-select {
+            padding: 6px 10px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .version-select:focus {
+            outline: none;
+        }
+
+        .version-select:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .together {
+            display: flex;
+            align-items: center;
+        }
+
+        #downloadFileName {
+            margin: 0;
+            margin-left: 10px;
+
+        }
+
+        .version-download-btn img {
+            filter: invert(100%);
+            animation: section-fade-in-inverted-img 1s ease-out forwards !important;
+            transition: 0.3s;
+        }
+
+        .version-download-btn:hover img {
+            filter: invert(0) !important;
+        }
+
+        .footer {
+            height: 30vh;
+            width: 100%;
+            background-color: rgb(255, 255, 255);
+            color: black;
+        }
+
+        .copyright {
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <ul>
+            <li><a href="#section-home">Home</a></li>
+            <li><a href="#section-about">About</a></li>
+            <li><a href="#section-downloads">Downloads</a></li>
+        </ul>
+    </div>
+    <div class="home-page" id="section-home">
+        <h1 class="main-title">TeamsPlus</h1>
+        <div class="horizontal-center">
+            <h3 class="description">Browser extension for Microsoft Teams. Adds the ability to customize your user
+                experience.</h3>
+        </div>
+
+        <div class="horizontal-center top-space">
+            <div class="actions">
+                <button class="download btn-normal" id="download-latest">Download
+                    latest</button>
+                <button class="download btn-inverted btn-with-icon" onclick='window.location.href="/login"'>
+                    <span>Login</span>
+                    <img src="https://www.svgrepo.com/show/510970/external-link.svg" alt="" class="btn-icon">
+
+                </button>
+            </div>
+
+        </div>
+    </div>
+    <div class="about" id="section-about">
+        <div class="horizontal-center">
+            <div class="max-width">
+                <h1 class="section-title">About TeamsPlus</h1>
+                <p>TeamsPlus is an upcoming browser extension designed to elevate your Microsoft Teams experience
+                    through advanced customization and productivity features. Currently in active development, the
+                    extension offers the following capabilities:</p>
+                <p>Core Features:</p>
+                <ul>
+                    <li><strong>Tailored Visual Design: </strong>Adjust interface colors, fonts, font sizes, and element
+                        spacing to align with your preferences or organizational branding.</li>
+                    <li><strong>Granular Styling Controls: </strong>Fine-tune border radius, font weight, line height,
+                        and spacing to create a cohesive, visually optimized workspace.</li>
+                    <li><strong>Theme Ecosystem: </strong>Build, save, and export custom themes for personal use, or
+                        publish them to the TeamsPlus Theme Shop for community sharing. Browse and download themes
+                        created by other users to instantly refresh your Teams interface.</li>
+                </ul>
+                <p>Additional enhancements are planned, including productivity tools, collaboration shortcuts, and
+                    deeper integration with Microsoft Teams workflows. <strong>Important Notes for Early
+                        Adoption:</strong>
+
+                    TeamsPlus is in beta; expect periodic updates that may introduce significant changes to
+                    functionality or design.
+
+                    Minor instability or temporary glitches may occur during this phase. User feedback will directly
+                    inform the extension’s evolution.
+
+                    TeamsPlus aims to empower users and organizations to personalize their Teams environment while
+                    fostering a community-driven library of themes and tools. Stay tuned for updates as we refine and
+                    expand the platform.</p>
+
+
+            </div>
+        </div>
+    </div>
+    <div class="downloads" id="section-downloads">
+        <div class="horizontal-center">
+            <div>
+                <h1 class="section-title">Download TeamsPlus</h3>
+                    <p>Many versions of TeamsPlus are available. If latest versions don't work, try using older
+                        versions.</p>
+                    <div class="together">
+                        <select name="version" id="downloadVersion" class="version-select">
+                        </select>
+                        <p id="downloadFileName"><strong>File name:</strong> teams_plus@1.2.1.zip</p>
+                    </div>
+                    <br>
+                    <button class="btn-normal btn-with-icon version-download-btn" id="version-download-btn">Download
+                        <img src="https://www.svgrepo.com/show/510957/download.svg" alt="">
+                    </button>
+
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+
+    </div>
+</body>
+<script src="{{ url_for('static', filename='js/home/script.js') }}"></script>
+
+</html>
