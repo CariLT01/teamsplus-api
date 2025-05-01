@@ -73,7 +73,7 @@ export class SafeTunnel {
         //if (b == false) {
         //    throw new Error("Server authenticity unproven, client refused connection");
         //}
-        const resp = await fetch(`${API_ENDPOINT}/api/v1/safe_tunnel/handshake`, {
+        const resp = await fetch(`/api/v1/safe_tunnel/handshake`, {
             method: 'POST',
             body: JSON.stringify({
                 publicKey: await exportKeyToPEM(this.keypair.publicKey, "public")

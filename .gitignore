@@ -9,3 +9,7 @@ databases/
 static/js/
 tests/__pycache__
 __pycache__/
+private_key.pem
+public_key.pem
+server.crt
+server.key

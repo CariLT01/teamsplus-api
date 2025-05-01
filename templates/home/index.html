@@ -323,8 +323,12 @@
 
         <div class="horizontal-center top-space">
             <div class="actions">
-                <button class="download btn-normal" id="download-latest">Download
-                    latest</button>
+                <button id="download-latest" style="display: none;"></button>
+                <button class="download btn-inverted btn-with-icon" onclick='window.location.href="https://github.com/CariLT01/teamsplus-extension/releases/tag/0.7.1"'>
+                    <span>Get on GitHub</span>
+                    <img src="https://www.svgrepo.com/show/510970/external-link.svg" alt="" class="btn-icon">
+
+                </button>
                 <button class="download btn-inverted btn-with-icon" onclick='window.location.href="/login"'>
                     <span>Login</span>
                     <img src="https://www.svgrepo.com/show/510970/external-link.svg" alt="" class="btn-icon">
@@ -373,8 +377,7 @@
         <div class="horizontal-center">
             <div>
                 <h1 class="section-title">Download TeamsPlus</h3>
-                    <p>Many versions of TeamsPlus are available. If latest versions don't work, try using older
-                        versions.</p>
+                    <p>Old versions are still available here, however new versions will only be posted on GitHub.</p>
                     <div class="together">
                         <select name="version" id="downloadVersion" class="version-select">
                         </select>

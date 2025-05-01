@@ -15,19 +15,32 @@ function submitButtonHandler2() {
   const usernameField: HTMLInputElement | null = document.querySelector("#registerUsername");
   const passwordField: HTMLInputElement | null = document.querySelector("#registerPassword");
   const confirmPasswordField: HTMLInputElement | null = document.querySelector("#confirmPassword");
+  const privateKeyPasswordField: HTMLInputElement | null = document.querySelector("#privateKeyPassword");
+  const privateKeyPasswordConfirmField: HTMLInputElement | null = document.querySelector("#privateKeyPasswordConfirm");
 
-  if (loginSubmitButton == null || usernameField == null || passwordField == null || confirmPasswordField == null) {
+  if (loginSubmitButton == null || usernameField == null || passwordField == null || confirmPasswordField == null  || privateKeyPasswordField == null || privateKeyPasswordConfirmField == null) {
     throw new Error("One or many elements are null");
   }
 
   loginSubmitButton.addEventListener("click", async (event) => {
     event.preventDefault();
 
+    /* 
+                        <input type="password" name="password" id="privateKeyPassword" placeholder="Encryption Password" required autocomplete="off">
+                    <input type="password" name="password" id="privateKeyPasswordConfirm" placeholder="Encryption Password Confirm" required autocomplete="off">
+    */
+
     const usernameValue: string = usernameField.value;
     const passwordValue: string = passwordField.value;
     const confirmValue: string = confirmPasswordField.value;
+    const privateKeyPasswordValue: string = privateKeyPasswordField.value;
+    const privateKeyPasswordConfirmValue: string = privateKeyPasswordConfirmField.value;
     if (passwordValue != confirmValue) {
       alert("Passwords don't match!");
+      return;
+    }
+    if (privateKeyPasswordValue != privateKeyPasswordConfirmValue) {
+      alert("Encryption passwords don't match!");
       return;
     }
 
@@ -50,6 +63,7 @@ function submitButtonHandler2() {
     const b = JSON.stringify({
       username: usernameValue,
       password: passwordValue,
+      privateKeyPassword: privateKeyPasswordField.value,
       captcha: token
     });
     const e = await safeTunnel.safeTunnelEncrypt(b);

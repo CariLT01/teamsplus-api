@@ -193,7 +193,7 @@ class AuthProvider:
         except jwt.InvalidTokenError:
             print("Invalid")
             return None
-    def register(self, username: str, password: str, captcha: str, verifyCaptcha: bool = True) -> HTTPRequestResponseDict:
+    def register(self, username: str, password: str, captcha: str, privateKeyPassword: str, verifyCaptcha: bool = True) -> HTTPRequestResponseDict:
         '''
         Registers a new user
         '''
@@ -251,7 +251,7 @@ class AuthProvider:
                 "privateKey": "b",
                 "iv": "b"
             })
-            self.create_public_and_private_key(password, cast(AuthenticationDataReturnType, self.db_provider.read_user_data(username=username)), force=True)
+            self.create_public_and_private_key(privateKeyPassword, cast(AuthenticationDataReturnType, self.db_provider.read_user_data(username=username)), force=True)
             print(f"New user OK")
             return {
                 'success': True,
@@ -370,11 +370,12 @@ class AuthProvider:
             username = djson.get('username')
             password = djson.get('password')
             captcha = djson.get('captcha')
+            privateKeyPassword = djson.get('privateKeyPassword')
 
-            if username == None or password == None or captcha == None:
+            if username == None or password == None or captcha == None or privateKeyPassword == None:
                 return jsonify(success=False, message="Bad request"), 400
 
-            auth = self.register(username, password, captcha)
+            auth = self.register(username, password, captcha, privateKeyPassword)
             
 
             return jsonify(auth), auth['httpStatus']
