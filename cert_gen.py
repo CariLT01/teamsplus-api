@@ -4,7 +4,7 @@ from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import rsa
 import datetime
 
-def generate_self_signed_cert(cert_file: str, key_file: str):
+def generate_self_signed_cert(cert_file: str, key_file: str) -> None:
     # 1) Generate RSA key
     key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
     

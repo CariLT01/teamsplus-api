@@ -71,6 +71,14 @@
             background-color: rgba(0, 0, 0, 0.1);
             border-bottom: 2px solid rgba(0, 0, 0, 0.5);
         }
+        .navbar-beta-notice {
+            background-color: rgb(235, 235, 235);
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        .navbar-beta-notice p {
+            margin: 0;
+            padding: 6px 12px;
+        }
 
         /* HOME PAGE */
 
@@ -136,6 +144,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            width: 100%;
         }
 
         .actions {
@@ -203,8 +212,6 @@
         /* ABOUT SECTION */
 
         .about {
-            background-color: black;
-            color: white;
             padding: 0.5vh 2vw;
 
 
@@ -293,32 +300,90 @@
         }
 
         .footer {
-            height: 30vh;
+            height: 5vh;
             width: 100%;
             background-color: rgb(255, 255, 255);
             color: black;
+            margin-top: 10vh;
+            padding-top: 4vh;
+            background-color: rgba(0,0,0,0.03);
         }
 
         .copyright {
             width: 100%;
             text-align: center;
         }
+
+        .feature-grid {
+            width: 90vw;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (min-width: 1200px) {
+            .feature-grid {
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            .feature-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 500px) {
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .feature-item {
+            background-color: rgba(0,0,0,0.01);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 24px;
+
+        }
+        .feature-item h3 {
+            margin: 0;
+        }
+        .feature-item p {
+            margin: 0;
+            padding-top: 8px;
+        }
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 20px;
+            background-color: rgba(0,0,0,0.04);
+            padding: 12px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
     </style>
 </head>
 
 <body>
     <div class="navbar">
-        <ul>
-            <li><a href="#section-home">Home</a></li>
-            <li><a href="#section-about">About</a></li>
-            <li><a href="#section-downloads">Downloads</a></li>
-        </ul>
+        <div class="navbar-links">
+            <ul>
+                <li><a href="#section-home">Home</a></li>
+                <li><a href="#section-about">About</a></li>
+                <li><a href="#section-downloads">Downloads</a></li>
+            </ul>
+        </div>
+        <div class="navbar-beta-notice">
+            <p>
+                <strong>Note:</strong> TeamsPlus is currently in beta. You may encounter bugs or unexpected behavior during use. Significant updates or changes to the extension may occur at any time without prior notice.
+            </p>
+            
+        </div>
     </div>
     <div class="home-page" id="section-home">
         <h1 class="main-title">TeamsPlus</h1>
         <div class="horizontal-center">
-            <h3 class="description">Browser extension for Microsoft Teams. Adds the ability to customize your user
-                experience.</h3>
+            <h3 class="description">Browser extension for Microsoft Teams</h3>
         </div>
 
         <div class="horizontal-center top-space">
@@ -339,37 +404,38 @@
         </div>
     </div>
     <div class="about" id="section-about">
+        
         <div class="horizontal-center">
-            <div class="max-width">
-                <h1 class="section-title">About TeamsPlus</h1>
-                <p>TeamsPlus is an upcoming browser extension designed to elevate your Microsoft Teams experience
-                    through advanced customization and productivity features. Currently in active development, the
-                    extension offers the following capabilities:</p>
-                <p>Core Features:</p>
-                <ul>
-                    <li><strong>Tailored Visual Design: </strong>Adjust interface colors, fonts, font sizes, and element
-                        spacing to align with your preferences or organizational branding.</li>
-                    <li><strong>Granular Styling Controls: </strong>Fine-tune border radius, font weight, line height,
-                        and spacing to create a cohesive, visually optimized workspace.</li>
-                    <li><strong>Theme Ecosystem: </strong>Build, save, and export custom themes for personal use, or
-                        publish them to the TeamsPlus Theme Shop for community sharing. Browse and download themes
-                        created by other users to instantly refresh your Teams interface.</li>
-                </ul>
-                <p>Additional enhancements are planned, including productivity tools, collaboration shortcuts, and
-                    deeper integration with Microsoft Teams workflows. <strong>Important Notes for Early
-                        Adoption:</strong>
+            <div class="">
+                <div class="horizontal-center">
+                    <div>
+                        <h1 class="section-title">Features</h1>
+                    </div>
 
-                    TeamsPlus is in beta; expect periodic updates that may introduce significant changes to
-                    functionality or design.
-
-                    Minor instability or temporary glitches may occur during this phase. User feedback will directly
-                    inform the extension’s evolution.
-
-                    TeamsPlus aims to empower users and organizations to personalize their Teams environment while
-                    fostering a community-driven library of themes and tools. Stay tuned for updates as we refine and
-                    expand the platform.</p>
-
-
+                </div>
+                
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <img src="https://www.svgrepo.com/show/340033/color-palette.svg" alt="" class="feature-icon">
+                        <h3>Custom themes</h3>
+                        <p>Modify the visual appearance of Microsoft Teams to better fit your preferences or workflow. Set your own background and foreground colors, adjust icon colors, and fine-tune the overall layout to reflect a setup that works best for you.</p>
+                    </div>
+                    <div class="feature-item">
+                        <img src="https://www.svgrepo.com/show/340359/game-console.svg" alt="" class="feature-icon">
+                        <h3>Games</h3>
+                        <p>Access a selection of simple, built-in games directly within Microsoft Teams. These are available instantly with no installations or additional permissions, designed for brief moments of downtime or quiet collaboration.</p>
+                    </div>
+                    <div class="feature-item">
+                        <img src="https://www.svgrepo.com/show/532185/letter-english-a.svg" alt="" class="feature-icon">
+                        <h3>Custom fonts</h3>
+                        <p>Select and use fonts from external sources to adjust the text appearance in Teams. This can help with readability, accessibility, or simply achieving a consistent style across different documents and discussions.</p>
+                    </div>
+                    <div class="feature-item">
+                        <img src="https://www.svgrepo.com/show/532320/lock.svg" alt="" class="feature-icon">
+                        <h3>Encryption</h3>
+                        <p>Protect conversations and shared content with message encryption. This minimizes the risk of exposure in the event of unauthorized access and supports a safer communication environment for both personal and professional use.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -392,7 +458,7 @@
         </div>
     </div>
     <div class="footer">
-
+        <p class="copyright">© 2025 TeamsPlus</p>
     </div>
 </body>
 <script src="{{ url_for('static', filename='js/home/script.js') }}"></script>

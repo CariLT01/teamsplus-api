@@ -37,10 +37,16 @@
             font-family: "Inter", sans-serif;
             width: 20vw;
             height: auto;
-            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+            background-color: rgba(0,0,0,0.01);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 10px;
             margin: 15px;
         }
-        
+        .new-theme-form {
+            display: flex;
+            gap: 5px;
+        }
+      
         .new-theme-field {
             font-family: "Inter", sans-serif;
             width: 90%;
@@ -121,10 +127,10 @@
 </head>
 
 <body>
-    <h1 class="title">Account Dashboard</h1>
+    <h1 class="title">My Account</h1>
     <div class="new-theme">
         <form action="">
-            <div class="center">
+            <div class="center new-theme-form">
                 <h3>Publish theme</h3>
                 <input type="text" id="theme-name" class="new-theme-field" placeholder="Theme name" required>
                 <textarea name="" id="theme-desc" class="new-theme-field" placeholder="Theme description" required rows="3"></textarea>
