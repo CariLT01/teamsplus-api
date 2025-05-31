@@ -108,6 +108,9 @@ class MainApp:
         self.httpServer.add_route("/api/v1/safe_tunnel/handshake", self.encryptionTunnelProvider.encryption_handshake_route, methods=['POST'])
         self.httpServer.add_route("/cert", cert_route, methods=['GET'])
 
+        # TOS routes
+        self.httpServer.add_route("/terms_of_service", static_pages.tos_page, methods=['GET'])
+
     def run(self) -> None:
 
         self.httpServer.run()

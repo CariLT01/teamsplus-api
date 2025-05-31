@@ -14,3 +14,5 @@ def register_page()->str:
 
 def game_of_life_page()->str:
     return render_template("game_of_life/index.html")
+def tos_page()->str:
+    return render_template("tos/index.html")
