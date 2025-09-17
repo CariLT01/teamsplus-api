@@ -1,9 +1,10 @@
-from flask import Flask, request, jsonify, make_response, Response
+from flask import Flask, Response
 from flask_cors import CORS
 
 import platform
 import random
 import os
+import time
 
 
 
@@ -39,4 +40,8 @@ class Flask_HTTPServer:
     
     def run(self, port: int = 5000) -> None:
         if platform.system() == 'Windows': # Prevent running app.run in production
+            end = time.time()
+
+            print(f"Cold start non-flask time: {end}")
+
             self.app.run(port=port)

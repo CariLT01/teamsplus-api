@@ -1,12 +1,10 @@
-import json, traceback
-from typing import TypedDict, NoReturn
+import time
+
+begin = time.time()
+
+print(f"Begin cold-start non-flask time: {begin}")
+
 from pydantic import BaseModel
-import platform
-
-from flask import Flask, request, jsonify, render_template, make_response, Response
-from flask_cors import CORS
-
-from typing import Any, cast
 
 from src.auth_provider import AuthProvider
 from src.db_provider import DatabaseProvider

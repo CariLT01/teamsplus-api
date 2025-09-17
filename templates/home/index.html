@@ -35,6 +35,17 @@
             opacity: 0;
         }
 
+        .navbar-elements {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            margin: 0;
+            margin-left: 0.5vw;
+            font-size: 1.5rem;
+        }
+
         .navbar ul {
             display: flex;
             height: 100%;
@@ -334,7 +345,7 @@
             width: 100%;
             background-color: black;
             color: black;
-           
+
             padding-top: 1vh;
             padding-bottom: 1vh;
             color: white;
@@ -344,23 +355,29 @@
             display: flex;
             gap: 2vw;
         }
+
         .footer-section-title {
             font-weight: bold;
         }
+
         .footer-section li {
             text-decoration: none;
             list-style: none;
         }
+
         .footer-section-title {
             margin-bottom: 1vh;
         }
+
         .footer-link {
             margin: 0.5vh 0;
         }
+
         .footer-link a {
             color: white;
             transition: 0.25s;
         }
+
         .footer-link a:hover {
             background-color: white;
             color: black;
@@ -425,18 +442,144 @@
             align-items: center;
             justify-content: center;
         }
+
+
+        .installation-instructions-overlay-container {
+            position: fixed;
+            z-index: 2147483647;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .installation-instructions-overlay {
+            width: 40vw;
+            height: 80vh;
+            background-color: white;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+
+            border-radius: 8px;
+            border: 1px solid rgba(0, 0, 0, 0.35);
+
+            padding: 20px;
+
+            font-size: 1.25rem;
+
+            display: flex;
+            flex-direction: column;
+
+            overflow-y: auto;
+        }
+        .instructions-ordered-lis-element {
+            margin: 20px 0;
+            
+        }
+
+        .installation-instructions-overlay ul {
+            margin: 10px 0;
+        }
+        .installation-instructions-overlay p {
+            margin: 10px 0;
+        }
+
+
+
+        .instructions-title {
+            text-decoration: underline;
+        }
+
+        code {
+            padding: .2em .4em;
+            background-color: #818b981f;
+            font-size: 85%;
+            border-radius: 6px;
+        }
+
+        .button-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .filler {
+            flex-grow: 1;
+        }
+        
     </style>
 </head>
 
 <body>
-    <div class="navbar">
-        <div class="navbar-links">
-            <ul>
-                <li><a href="#section-home">Home</a></li>
-                <li><a href="#section-about">About</a></li>
-                <li><a href="#section-downloads">Downloads</a></li>
-            </ul>
+
+    <div class="installation-instructions-overlay-container" id="installationInstructions" style="display: none">
+        <div class="installation-instructions-overlay">
+            <h1 class="instructions-title">How to install TeamsPlus</h1>
+            <p>A comprehensive guide on how to install TeamsPlus.</p>
+            <ol class="instructions-ordered-list">
+                <li class="instructions-ordered-lis-element">
+                    <strong>Download the extension</strong>
+                    <p>Download the <code>.zip</code> file from the website (this website) or from <a
+                            href="https://github.com/CariLT01/teamsplus-extension/releases/latest">GitHub</a>.</p>
+                </li>
+                <li class="instructions-ordered-lis-element">
+                    <strong>Open the downloaded file</strong>
+                    <p>Open the <code>.zip</code> file that you have downloaded. It should be in your Downloads folder
+                        on Windows.</p>
+                </li>
+                <li class="instructions-ordered-lis-element">
+                    <strong>Extract the file</strong>
+                    <p>Once opened, press <i>Extract All</i> at the top of the window (File Explorer). If prompted to choose a path to extract to, just continue with the default path and click <i>Extract</i>.</p>
+                </li>
+                <li class="instructions-ordered-lis-element">
+                    <strong>Open the browser extensions page</strong>
+                    <ul>
+                        <li>Open your favorite browser</li>
+                        <li>Navigate to <code>chrome://extensions</code> (or <code>edge://extensions</code> on Microsoft
+                            Edge)</li>
+                    </ul>
+
+                </li>
+                <li class="instructions-ordered-lis-element">
+                    <strong>Enable developer mode</strong>
+                    <p>In the top right of the page (or middle left for Edge), toggle <strong>Developer mode</strong>
+                        on</p>
+                </li>
+                <li class="instructions-ordered-lis-element">
+                    <strong>Load the extension</strong>
+                    <ul>
+                        <li>Click <strong>Load unpacked</strong></li>
+                        <li>Select the folder you extracted in step 3</li>
+                    </ul>
+                </li>
+                <li class="instructions-ordered-lis-element">
+                    <strong>Confirm installation</strong>
+                    <p>The extension should now appear in the extensions list and be active.</p>
+                </li>
+            </ol>
+            <div class="filler"></div>
+            <div class="button-center">
+                <button type="button" id="instructionsCloseButton" class="btn-normal instructions-close">Close Instructions</button>
+            </div>
         </div>
+    </div>
+
+
+    <div class="navbar">
+        <div class="navbar-elements">
+            <h3 class="navbar-brand">TeamsPlus</h3>
+            <div class="navbar-links">
+                <ul>
+                    <li><a href="#section-home">Home</a></li>
+                    <li><a href="#section-about">About</a></li>
+
+                </ul>
+            </div>
+        </div>
+
         <div class="navbar-beta-notice">
             <p>
                 <strong>Note:</strong> TeamsPlus is currently in beta. You may encounter bugs or unexpected behavior
@@ -519,7 +662,7 @@
     <div class="downloads" id="section-downloads">
         <div class="horizontal-center">
             <div>
-                <h1 class="section-title">Download TeamsPlus</h3>
+                <h1 class="section-title">Download Old Versions of TeamsPlus</h3>
                     <p>Old versions are still available here, however new versions will only be posted on GitHub.</p>
                     <div class="together">
                         <select name="version" id="downloadVersion" class="version-select">
@@ -548,9 +691,10 @@
             <div class="right-section footer-section">
                 <ul>
                     <li class="footer-section-title">Legal</li>
-                    <li class="footer-link"><a href="https://apiteamsplus.pythonanywhere.com/terms_of_service">Terms of Service</a></li>
+                    <li class="footer-link"><a href="https://apiteamsplus.pythonanywhere.com/terms_of_service">Terms of
+                            Service</a></li>
                 </ul>
-                
+
             </div>
         </div>
         <div class="bottom-section">

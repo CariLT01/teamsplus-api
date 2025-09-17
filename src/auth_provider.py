@@ -3,7 +3,12 @@ from src.custom_types import *
 from src.config import JWT_SECRET_KEY, CAPTCHA_SECRET
 from src.encryption_tunnel import EncryptionTunnel
 
+
+
 import time
+
+begin = time.time()
+
 import random
 import bcrypt
 import datetime
@@ -17,9 +22,7 @@ import json
 
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
-from Crypto.Util.Padding import pad, unpad
 from Crypto.PublicKey import RSA
-from Crypto.Cipher import PKCS1_OAEP
 
 from flask import make_response, jsonify
 from flask import Request, request
@@ -28,6 +31,10 @@ from flask import Response
 from typing import NoReturn
 from typing import cast
 from typing import Any
+
+end = time.time()
+
+print(f"Lib import time: {end - begin}s")
 
 SLEEP_DURATION_MIN = 0.7
 SLEEP_DURATION_MAX = 1.4

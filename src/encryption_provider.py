@@ -5,9 +5,12 @@ from src.encryption_tunnel import EncryptionTunnel
 
 from flask import Response, request, jsonify
 
+import time
+
+start = time.time()
+
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
-from Crypto.Util.Padding import pad, unpad
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.Random import get_random_bytes
@@ -15,6 +18,9 @@ from Crypto.PublicKey import RSA
 from Crypto.Signature import pss
 from Crypto.Hash import SHA256
 
+end = time.time()
+
+print(f"Crypto import time: {end - start}s")
 
 import hashlib
 import base64
@@ -30,6 +36,7 @@ class EncryptionProvider:
         self.db_provider = db_provider
         self.safe_tunnel = EncryptionTunnel()
     
+
     def encrypt(self, to_user_ids: list[int], body: str, password: str, tokenData: AuthenticationToken) -> EncryptionProviderResultDict:
         '''
         Encrypts message

@@ -209,6 +209,9 @@ async function downloadLatestGitHub() {
         document.body.removeChild(a);
 
         console.log(`Downloading ${fileName}...`);
+
+        const w = document.querySelector("#installationInstructions") as HTMLDivElement;
+        w.style.display = "block";
     } catch (err) {
         console.error('Failed to download release:', err);
         alert("Failed to download latest release");
@@ -219,6 +222,12 @@ window.onload = function () {
     refreshVersions();
     getFileInfo();
     versionDownloadHandler();
+
+    const closeInstructionsButton = document.querySelector("#instructionsCloseButton") as HTMLButtonElement;
+    closeInstructionsButton.addEventListener("click", () => {
+        const w = document.querySelector("#installationInstructions") as HTMLDivElement;
+        w.style.display = "none";
+    })
 
     const a = document.querySelector("#downloadLatest");
     if (a) {
