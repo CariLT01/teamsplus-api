@@ -21,6 +21,7 @@ class ThemeData_DataFieldDictType(BaseModel):
     classColors: dict[str, str]
     fonts: ThemeData_FontsDictType
     otherSettings: dict[str, str]
+    backgrounds: dict[str, str]
     twemojiSupport: bool
 
 class ThemeDataDict(BaseModel):

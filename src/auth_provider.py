@@ -55,7 +55,7 @@ class AuthProvider:
             "id": userData['id'], # Database entry ID
             'exp': datetime.datetime.utcnow() + TOKEN_EXPIRY_TIME
         }
-        print(f"User: {payload["username"]}")
+        #print(f"User: {payload["username"]}")
 
         token = jwt.encode(payload, JWT_SECRET_KEY, algorithm='HS256')
         
@@ -93,7 +93,7 @@ class AuthProvider:
 
             private_key_str = private_key.decode()  # Convert bytes to string
             public_key_str = public_key_bytes.decode()   # Convert bytes to string
-            print(public_key_str, private_key_str)
+            #print(public_key_str, private_key_str)
 
             nonce = get_random_bytes(12)  # 12 bytes is recommended for GCM
 
@@ -103,8 +103,8 @@ class AuthProvider:
             
 
             encrypted = nonce + tag + ct
-            print("Encrpyted AES key:")
-            print(encrypted)
+            #print("Encrpyted AES key:")
+            #print(encrypted)
 
             self.db_provider.change_user_data({
                 "favorites": user_data["favorites"],
@@ -125,7 +125,7 @@ class AuthProvider:
         Authenticates user and creates token. Login.
         '''
         try:
-            print("AUTH")
+            #print("AUTH")
             user_data: AuthenticationDataReturnType | None = self.db_provider.read_user_data(username=username)
             if (user_data == None):
                 time.sleep(random.uniform(SLEEP_DURATION_MIN, SLEEP_DURATION_MAX))
@@ -139,7 +139,7 @@ class AuthProvider:
             hashed_db_password: str = user_data["password"]
 
             if bcrypt.checkpw(password.encode(), hashed_db_password.encode()) == False:
-                print(f"Incorrect password")
+                #print(f"Incorrect password")
                 return {
                     'success': False,
                     'message': "Invalid credentials",
@@ -147,7 +147,7 @@ class AuthProvider:
                 }, None
             self.create_public_and_private_key(password, user_data)
             out, tok = self.generateToken(user_data, transfer)
-            print("GENERATED THE FUCKING TOKEN")
+            #print("GENERATED THE FUCKING TOKEN")
             return out, tok
              
         except Exception as e:
@@ -176,16 +176,16 @@ class AuthProvider:
                 token = request.headers.get("Authorization")
                 if token == None:
                     raise ValueError("No token in headers")
-                print(token)
+                #print(token)
                 token = token[7:]  # Strip 'Bearer '
-                print(str(token))
+                #print(str(token))
             except: print("Failed to get headers ", traceback.format_exc())
         if not token:
             print("No token???")
             return None
         try:
             decoded_payload: AuthenticationToken|NoReturn = jwt.decode(token, JWT_SECRET_KEY, algorithms=['HS256'])
-            print(decoded_payload)
+            #print(decoded_payload)
             return decoded_payload
         except jwt.ExpiredSignatureError:
             print("Expired")
@@ -296,7 +296,7 @@ class AuthProvider:
                 "httpStatus": 200
             }
         try:
-            print(search_term)
+            #print(search_term)
             c = self.db_provider.db.database.cursor()
             c.execute('''
                 SELECT * FROM users

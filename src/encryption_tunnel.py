@@ -32,7 +32,7 @@ class EncryptionTunnel:
 
     def encryption_handshake_route(self) -> tuple[Response, int]:
         try:
-            print(request.data)
+            #print(request.data)
             data = request.get_json()
 
             user_public_key = data.get("publicKey")

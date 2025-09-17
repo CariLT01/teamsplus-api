@@ -36,22 +36,22 @@ class EncryptionProvider:
         '''
         body.encode().decode() # Ensure invalid characters cause error
         myUserId = tokenData["id"]
-        print(f"My user id: {myUserId}")
+        #print(f"My user id: {myUserId}")
         my_user_data: AuthenticationDataReturnType | None = self.db_provider.read_user_data(id=myUserId)
         if my_user_data == None:
             raise Exception("User data not found")
         myPrivateKey: bytes = my_user_data["privateKey"]
-        print(myPrivateKey)
+        #print(myPrivateKey)
         nonce = myPrivateKey[:12]
         tag = myPrivateKey[12:28]
         ct = myPrivateKey[28:]
         hashedPassword = hashlib.sha256(password.encode()).digest()
-        print("Hashed password:")
-        print(hashedPassword)
-        print(f"Len: {len(hashedPassword)}")
-        print("IV:")
-        print(nonce)
-        print(f"Len: {len(nonce)}")
+        #print("Hashed password:")
+        #print(hashedPassword)
+        #print(f"Len: {len(hashedPassword)}")
+        #print("IV:")
+        #print(nonce)
+        #print(f"Len: {len(nonce)}")
         cipher = AES.new(hashedPassword, AES.MODE_GCM, nonce=nonce)
         pt = cipher.decrypt_and_verify(ct, tag)
         my_privateKeyImported = RSA.import_key(pt)
@@ -73,11 +73,11 @@ class EncryptionProvider:
         encrypted_body_b64 = base64.b64encode(ct).decode()
         iv_b64 = base64.b64encode(iv).decode()
 
-        print("Encrypted body B64: ", encrypted_body_b64)
-        print("IV B64: ", iv_b64)
-        print("Signature B64: ", signature_b64)
+        #print("Encrypted body B64: ", encrypted_body_b64)
+        #print("IV B64: ", iv_b64)
+        #print("Signature B64: ", signature_b64)
         
-        print("Message signature: ", signature)
+        #print("Message signature: ", signature)
         
         dest_keys: dict[int, str] = {}
 
@@ -114,7 +114,7 @@ class EncryptionProvider:
 
                 encrypted_aes_b64 = base64.b64encode(ciphertext).decode()
 
-                print(f"Encrypted key for {user_id_dest}:", encrypted_aes_b64)
+                #print(f"Encrypted key for {user_id_dest}:", encrypted_aes_b64)
 
 
                 dest_keys[user_id_dest] = encrypted_aes_b64
@@ -149,7 +149,7 @@ class EncryptionProvider:
         '''
         try:
             aes_key: str | None = aes_keys.get(str(tokenData["id"]))
-            print(aes_keys, tokenData["id"])
+            #print(aes_keys, tokenData["id"])
             if aes_key == None:
                 return {
                     "success": False,
@@ -211,12 +211,12 @@ class EncryptionProvider:
             cipher = AES.new(plaintext, AES.MODE_GCM, nonce=nonce)
             pt = cipher.decrypt_and_verify(body_bytes, tag)
 
-            print("Decrpted message: ", pt)
+            #print("Decrpted message: ", pt)
             #print(pt.decode())
 
             hash_obj = SHA256.new(pt)
             verifier.verify(hash_obj, signature_bytes)
-            print("Signature is valid")
+            #print("Signature is valid")
 
             return {
                 "success": True,
