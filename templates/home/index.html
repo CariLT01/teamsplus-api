@@ -129,6 +129,7 @@
             position: relative;
             background-color: rgba(240, 248, 255, 0.158);
         }
+
         .home-information {
             position: absolute;
             left: 50%;
@@ -160,6 +161,7 @@
             align-items: center;
             width: 100%;
         }
+
         .home-page-quick-actions {
             margin-top: 5vh !important;
         }
@@ -184,6 +186,7 @@
             padding: 30px 90px;
             font-size: large;
         }
+
         .btn-large-font {
             font-size: large;
         }
@@ -327,14 +330,42 @@
         }
 
         .footer {
-            height: 5vh;
+            height: fit-content;
             width: 100%;
-            background-color: rgb(255, 255, 255);
+            background-color: black;
             color: black;
-            margin-top: 10vh;
-            padding-top: 4vh;
-            background-color: rgba(0, 0, 0, 0.03);
+           
+            padding-top: 1vh;
+            padding-bottom: 1vh;
+            color: white;
         }
+
+        .footer-links {
+            display: flex;
+            gap: 2vw;
+        }
+        .footer-section-title {
+            font-weight: bold;
+        }
+        .footer-section li {
+            text-decoration: none;
+            list-style: none;
+        }
+        .footer-section-title {
+            margin-bottom: 1vh;
+        }
+        .footer-link {
+            margin: 0.5vh 0;
+        }
+        .footer-link a {
+            color: white;
+            transition: 0.25s;
+        }
+        .footer-link a:hover {
+            background-color: white;
+            color: black;
+        }
+
 
         .copyright {
             width: 100%;
@@ -424,11 +455,13 @@
             <div class="horizontal-center top-space home-page-quick-actions">
                 <div class="actions">
                     <button id="download-latest" style="display: none;"></button>
-                    <button class="download btn-large-font btn-normal btn-with-icon version-download-btn" id="downloadLatest">
+                    <button class="download btn-large-font btn-normal btn-with-icon version-download-btn"
+                        id="downloadLatest">
                         <span>Download Latest</span>
                         <img src="https://www.svgrepo.com/show/510957/download.svg" alt="">
                     </button>
-                    <button class="download btn-inverted btn-with-icon btn-large-font" onclick='window.location.href="/login"'>
+                    <button class="download btn-inverted btn-with-icon btn-large-font"
+                        onclick='window.location.href="/login"'>
                         <span>Login</span>
                         <img src="https://www.svgrepo.com/show/510970/external-link.svg" alt="" class="btn-icon">
 
@@ -502,9 +535,31 @@
         </div>
     </div>
     <div class="footer">
-        <p class="copyright">
-            © 2025 TeamsPlus. All rights reserved.<br>Not affiliated with or endorsed by Microsoft.
-        </p>
+        <div class="footer-links">
+            <div class="left-section footer-section">
+                <ul>
+                    <li class="footer-section-title">Links</li>
+                    <li class="footer-link"><a href="https://github.com/CariLT01/teamsplus-extension">GitHub</a></li>
+                    <li class="footer-link"><a href="https://apiteamsplus.pythonanywhere.com">Website</a></li>
+                </ul>
+
+            </div>
+
+            <div class="right-section footer-section">
+                <ul>
+                    <li class="footer-section-title">Legal</li>
+                    <li class="footer-link"><a href="https://apiteamsplus.pythonanywhere.com/terms_of_service">Terms of Service</a></li>
+                </ul>
+                
+            </div>
+        </div>
+        <div class="bottom-section">
+            <p class="copyright">
+                © 2025 TeamsPlus. All rights reserved.<br>Not affiliated with or endorsed by Microsoft.
+            </p>
+        </div>
+
+
     </div>
 </body>
 <script src="{{ url_for('static', filename='js/home/script.js') }}"></script>
