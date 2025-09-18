@@ -13,3 +13,5 @@ private_key.pem
 public_key.pem
 server.crt
 server.key
+
+src/site_secrets.py
