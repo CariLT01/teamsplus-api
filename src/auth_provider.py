@@ -42,7 +42,7 @@ SLEEP_DURATION_MAX = 1.4
 TOKEN_EXPIRY_TIME = datetime.timedelta(days=7)
 TOKEN_EXPIRY_INT = (60 * 60 * 24) * 7
 
-
+MIGRATE_NEW_ENCRYPTION_ALGORITHM = False
 
 class AuthProvider:
 
@@ -103,8 +103,11 @@ class AuthProvider:
             #print(public_key_str, private_key_str)
 
             nonce = get_random_bytes(12)  # 12 bytes is recommended for GCM
-
-            password_hashed = hashlib.sha256(user_password.encode()).digest()
+            if MIGRATE_NEW_ENCRYPTION_ALGORITHM:
+                password_hashed = hashlib.pbkdf2_hmac('sha256', user_password.encode(), b'fixed salt', 100_000, 32)
+            else:
+                print(f"WARN: Using old SHA256")
+                password_hashed = hashlib.sha256(user_password.encode()).digest()
             cipher = AES.new(password_hashed, AES.MODE_GCM, nonce=nonce)
             ct, tag = cipher.encrypt_and_digest(private_key_str.encode())
             

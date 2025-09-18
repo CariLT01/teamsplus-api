@@ -20,6 +20,8 @@ from Crypto.Hash import SHA256
 
 end = time.time()
 
+ALLOW_ALGORITHM_UPGRADE = True
+
 print(f"Crypto import time: {end - start}s")
 
 import hashlib
@@ -53,15 +55,55 @@ class EncryptionProvider:
         tag = myPrivateKey[12:28]
         ct = myPrivateKey[28:]
         hashedPassword = hashlib.sha256(password.encode()).digest()
+        
         #print("Hashed password:")
         #print(hashedPassword)
         #print(f"Len: {len(hashedPassword)}")
         #print("IV:")
         #print(nonce)
         #print(f"Len: {len(nonce)}")
-        cipher = AES.new(hashedPassword, AES.MODE_GCM, nonce=nonce)
-        pt = cipher.decrypt_and_verify(ct, tag)
-        my_privateKeyImported = RSA.import_key(pt)
+        my_privateKeyImported = None
+        try:
+            cipher = AES.new(hashedPassword, AES.MODE_GCM, nonce=nonce)
+            pt = cipher.decrypt_and_verify(ct, tag)
+            my_privateKeyImported = RSA.import_key(pt)
+
+            if ALLOW_ALGORITHM_UPGRADE == True:
+
+                user_data: AuthenticationDataReturnType | None = self.db_provider.read_user_data(username=tokenData['username'])
+
+                if user_data == None: raise RuntimeError("Token data is None")
+
+                nonce = get_random_bytes(12)  # 12 bytes is recommended for GCM
+
+                password_hashed = hashlib.pbkdf2_hmac('sha256', password.encode(), b'fixed salt', 200_000, 32)
+                cipher = AES.new(password_hashed, AES.MODE_GCM, nonce=nonce)
+                ct, tag = cipher.encrypt_and_digest(my_privateKeyImported.export_key())
+
+                encrypted_private_key = nonce + tag + ct
+
+                self.db_provider.change_user_data({
+                    "favorites": user_data["favorites"],
+                    "id": user_data["id"],
+                    "iv": None,
+                    "ownedThemes": user_data["ownedThemes"],
+                    "password": user_data["password"],
+                    "privateKey": encrypted_private_key,
+                    "publicKey": user_data["publicKey"],
+                    "username": user_data["username"]
+                }, id=user_data["id"])
+
+                print(f"Successfully upgraded from SHA256 to PBKDF2_HMAC")
+            else:
+                print(f"Migration not allowed!")
+
+        except:
+            hashedPassword = hashlib.pbkdf2_hmac("sha256", password.encode(), b'fixed salt', 200_000, 32)
+            print(f"Failed with SHA256. Trying with advanced")
+            cipher = AES.new(hashedPassword, AES.MODE_GCM, nonce=nonce)
+            pt = cipher.decrypt_and_verify(ct, tag)
+            my_privateKeyImported = RSA.import_key(pt)
+
 
         aes_key = get_random_bytes(32)
         nonce2: bytes = get_random_bytes(12)
@@ -196,12 +238,47 @@ class EncryptionProvider:
 
 
             hashedPassword = hashlib.sha256(password.encode()).digest()
-            cipher = AES.new(hashedPassword, AES.MODE_GCM, nonce=nonce)  # nonce replaces iv
-            pt = cipher.decrypt_and_verify(ct, tag)
+            my_privateKeyImported = None
+            try:
+                cipher = AES.new(hashedPassword, AES.MODE_GCM, nonce=nonce)
+                pt = cipher.decrypt_and_verify(ct, tag)
+                my_privateKeyImported = RSA.import_key(pt)
 
-            #print(pt)
+                if ALLOW_ALGORITHM_UPGRADE == True:
 
-            my_privateKeyImported = RSA.import_key(pt)
+                    user_data: AuthenticationDataReturnType | None = self.db_provider.read_user_data(username=tokenData['username'])
+
+                    if user_data == None: raise RuntimeError("Token data is None")
+
+                    nonce = get_random_bytes(12)  # 12 bytes is recommended for GCM
+
+                    password_hashed = hashlib.pbkdf2_hmac('sha256', password.encode(), b'fixed salt', 200_000, 32)
+                    cipher = AES.new(password_hashed, AES.MODE_GCM, nonce=nonce)
+                    ct, tag = cipher.encrypt_and_digest(my_privateKeyImported.export_key())
+
+                    encrypted_private_key = nonce + tag + ct
+
+                    self.db_provider.change_user_data({
+                        "favorites": user_data["favorites"],
+                        "id": user_data["id"],
+                        "iv": None,
+                        "ownedThemes": user_data["ownedThemes"],
+                        "password": user_data["password"],
+                        "privateKey": encrypted_private_key,
+                        "publicKey": user_data["publicKey"],
+                        "username": user_data["username"]
+                    }, id=user_data["id"])
+
+                    print(f"Successfully upgraded from SHA256 to PBKDF2_HMAC")
+                else:
+                    print(f"Migration not allowed!")
+
+            except:
+                hashedPassword = hashlib.pbkdf2_hmac("sha256", password.encode(), b'fixed salt', 200_000, 32)
+                print(f"Failed with SHA256. Trying with advanced")
+                cipher = AES.new(hashedPassword, AES.MODE_GCM, nonce=nonce)
+                pt = cipher.decrypt_and_verify(ct, tag)
+                my_privateKeyImported = RSA.import_key(pt)
 
             # Decrypt the AES key
             

@@ -1,5 +1,5 @@
 import datetime, platform
-import site_secrets
+import src.site_secrets as site_secrets
 
 ABSOLUTE_PATH = "" # Absolute path to append during dev.
 if platform.system() != 'Windows':
