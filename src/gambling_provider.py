@@ -118,7 +118,7 @@ class GamblingProvider:
         if self.check_timeout(authProvider):
             return jsonify(success=False, message="Too many requests"), 429
         
-        return self.generate_returned_data([(7, 0), (7, 1), (7, 2)], True, False, authProvider) # Test;
+        # return self.generate_returned_data([(7, 0), (7, 1), (7, 2)], True, False, authProvider) # Test;
         
         try:
             random_or_trick_score = random.uniform(0.0, 1.0)
