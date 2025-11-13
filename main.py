@@ -104,7 +104,7 @@ class MainApp:
         self.httpServer.add_route("/api/v1/user/get_coins", lambda: self.themeManager.get_coins_count_route(self.authProvider), methods=["GET"])
 
         # Gambling routes
-        self.httpServer.add_route("/api/v1/fun_minigame/slot_machine_next", lambda: self.gamblingProvider.slot_machine_get_next_route(self.authProvider), methods=["GET"])
+        self.httpServer.add_route("/api/v1/fun_minigame/game_next", lambda: self.gamblingProvider.slot_machine_get_next_route(self.authProvider), methods=["GET"])
         self.httpServer.add_route("/api/v1/fun_minigame/redeem_token", lambda: self.gamblingProvider.redeem_token_route(self.authProvider), methods=["POST"])
 
         # Encryption API routes
