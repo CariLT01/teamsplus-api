@@ -6,6 +6,7 @@ import jwt
 import secrets
 from datetime import datetime, timedelta
 from src.site_secrets import *
+from src.config import ABSOLUTE_PATH
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -18,7 +19,7 @@ class GamblingProvider:
         
 
 
-        self.gambling_db = Database("databases/gambling.db")
+        self.gambling_db = Database(f"{ABSOLUTE_PATH}databases/gambling.db")
         
         self.gambling_db.create_table_if_not_exists("tokens", {
             "id": "INTEGER PRIMARY KEY",
