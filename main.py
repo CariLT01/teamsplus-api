@@ -16,6 +16,7 @@ from src.game_of_life.game_of_life import GameOfLife
 from src.httpServer import Flask_HTTPServer
 from src.encryption_tunnel import EncryptionTunnel
 from src.certificate import cert_route
+from src.gambling_provider import GamblingProvider
 import src.versions as versions
 
 import src.static_pages as static_pages
@@ -61,8 +62,14 @@ class MainApp:
         self.encryptionProvider = EncryptionProvider(self.db_provider)
         self.gameOfLifeProvider = GameOfLife(self.authProvider)
         self.encryptionTunnelProvider = EncryptionTunnel()
+        self.gamblingProvider = GamblingProvider()
     
     def initialize(self) -> None:
+        
+        # Migrate dabases
+        
+        self.db_provider.load_databases()
+        
         self.add_routes()
 
     def add_routes(self) -> None:
@@ -92,6 +99,13 @@ class MainApp:
         self.httpServer.add_route("/api/v1/themes/get", self.themeManager.get_themes_route, methods=["GET"])
         self.httpServer.add_route("/api/v1/themes/star", lambda: self.themeManager.star_theme_route(self.authProvider), methods=["POST"])
         self.httpServer.add_route("/api/v1/themes/wait_did_i_star_this", lambda: self.themeManager.get_theme_starred_route(self.authProvider), methods=["GET"])
+        
+        # User API routes
+        self.httpServer.add_route("/api/v1/user/get_coins", lambda: self.themeManager.get_coins_count_route(self.authProvider), methods=["GET"])
+
+        # Gambling routes
+        self.httpServer.add_route("/api/v1/fun_minigame/slot_machine_next", lambda: self.gamblingProvider.slot_machine_get_next_route(self.authProvider), methods=["GET"])
+        self.httpServer.add_route("/api/v1/fun_minigame/redeem_token", lambda: self.gamblingProvider.redeem_token_route(self.authProvider), methods=["POST"])
 
         # Encryption API routes
         self.httpServer.add_route("/api/v1/encryption/encrypt", lambda: self.encryptionProvider.encrypt_route(self.authProvider), methods=['POST'])

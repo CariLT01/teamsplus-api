@@ -57,29 +57,19 @@ class Database:
         cursor.execute(command, params)
         return cursor
 
-    def read_row_from_table(self, table: str, queryKey: str, queryValue: Any, cols:list[str])->dict[str, Any]|None:
-        """
-        Fetches row from table. Returns NONE if target not found.
-        Returns data in RV(row value) pairs
-        """
-        command: str = f"SELECT * from {table} WHERE {queryKey} = ?"
+    def read_row_from_table(self, table, queryKey, queryValue, cols):
+        cols_str = ", ".join(cols)
+        command = f"SELECT {cols_str} FROM {table} WHERE {queryKey} = ?"
 
         cursor = self.execute_command_and_return_cursor(command, (queryValue,))
-    
-        row_data: tuple[Any, ...] | None = cursor.fetchone()
-        if row_data == None:
+        row_data = cursor.fetchone()
+        cursor.close()
+
+        if row_data is None:
             print("DB HELPER: Read failed: no data matches query")
             return None
 
-        dict_data:dict[str, Any] = {}
-        i = 0
-
-        for k in cols:
-            dict_data[k] = row_data[i]
-            i += 1
-        
-
-        return dict_data
+        return dict(zip(cols, row_data))
 
     def change_row_in_table(self, table: str, values: dict[str, Any], queryKey: str, queryValue: Any)->None:
         """

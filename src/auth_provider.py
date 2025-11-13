@@ -42,7 +42,7 @@ SLEEP_DURATION_MAX = 1.4
 TOKEN_EXPIRY_TIME = datetime.timedelta(days=7)
 TOKEN_EXPIRY_INT = (60 * 60 * 24) * 7
 
-MIGRATE_NEW_ENCRYPTION_ALGORITHM = False
+MIGRATE_NEW_ENCRYPTION_ALGORITHM = True
 
 class AuthProvider:
 
@@ -104,7 +104,7 @@ class AuthProvider:
 
             nonce = get_random_bytes(12)  # 12 bytes is recommended for GCM
             if MIGRATE_NEW_ENCRYPTION_ALGORITHM:
-                password_hashed = hashlib.pbkdf2_hmac('sha256', user_password.encode(), b'fixed salt', 100_000, 32)
+                password_hashed = hashlib.pbkdf2_hmac('sha256', user_password.encode(), b'fixed salt', 200_000, 32)
             else:
                 print(f"WARN: Using old SHA256")
                 password_hashed = hashlib.sha256(user_password.encode()).digest()
@@ -182,7 +182,6 @@ class AuthProvider:
             except: print("Failed to get JSON", traceback.format_exc())
         if not token:
             try:
-                print(request.headers)
                 token = request.headers.get("Authorization")
                 if token == None:
                     raise ValueError("No token in headers")

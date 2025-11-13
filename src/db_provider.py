@@ -2,12 +2,17 @@ from src.databaseHelper import Database
 
 from typing import Any, cast
 from src.custom_types import *
+from src.migration import databaseMigration
 
 class DatabaseProvider:
 
     def __init__(self, db_path: str = "databases/users.db"):
         self.db = Database(db_path)
         self.load_databases()
+        print(f"Migrating...")
+        databaseMigration.migrate_database(self)
+        print(f"Migration complete")
+
     def load_databases(self) -> None:
         self.db.create_table_if_not_exists("users", {
             "id": "INTEGER PRIMARY KEY",
@@ -39,7 +44,7 @@ class DatabaseProvider:
         if not kwargs:
             return None
         queryKey, queryValue = next(iter(kwargs.items()))
-        return cast(AuthenticationDataReturnType | None, self.db.read_row_from_table("users", queryKey, queryValue, ["id", "username", "favorites", "ownedThemes", "password", "publicKey", "privateKey", "iv"]))
+        return cast(AuthenticationDataReturnType | None, self.db.read_row_from_table("users", queryKey, queryValue, ["id", "username", "favorites", "ownedThemes", "password", "publicKey", "privateKey", "iv", "coins"]))
 
     def change_user_data(self, values: dict[str, Any], **kwargs: Any) -> None:
         if not kwargs: return None

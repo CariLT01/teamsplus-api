@@ -17,6 +17,7 @@ class AuthenticationDataReturnType(TypedDict):
     publicKey: str
     privateKey: bytes
     iv: str|None
+    coins: int
 
 class ThemeDataReturnType(TypedDict):
     '''

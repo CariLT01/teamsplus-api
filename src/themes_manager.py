@@ -554,3 +554,19 @@ class ThemesManager:
         except Exception as e:
             print("Failed", traceback.format_exc())
             return jsonify(success=False, message="Internal server error"), 500
+    def get_coins_count_route(self, authProvider: AuthProvider)->tuple[Response, int]:
+        tokenData = authProvider.check_token(request)
+        if tokenData == None:
+            return jsonify(success=False, message="Unauthorized", errorId="UNAUTHORIZED"), 401
+        if tokenData.get("id") == None:
+            return jsonify(success=False, message="Invalid token - Username field not found", errorId="UNAUTHORIZED"), 401
+        id = tokenData.get("id")
+        
+        user_data = self.db_provider.read_user_data(id=id)
+        if not user_data:
+            return jsonify(success=False, message="User not found", errorId="USER_NOT_FOUND"), 404
+        return jsonify(success=True, data=user_data.get("coins"), message="OK"), 200
+    
+
+
+            

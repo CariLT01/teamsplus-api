@@ -15,3 +15,5 @@ server.crt
 server.key
 
 src/site_secrets.py
+cert.pem
+key.pem
