@@ -131,7 +131,7 @@ class GamblingProvider:
                 
                     target_digit = random.randint(0, 9)
                     
-                    digits = [(target_digit, 0), (target_digit, 1), (target_digit + random.randint(-1, 1), 2)]
+                    digits = [(target_digit, 0), (target_digit, 1), (target_digit + random.choice([-1, 1]), 2)]
                     random.shuffle(digits)
                     
                     return self.generate_returned_data(digits, False, True, authProvider)
