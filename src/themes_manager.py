@@ -12,23 +12,27 @@ from flask import request, jsonify, Response
 
 
 # Validation types
-class ThemeData_FontsDictType(BaseModel):
+class ThemeData_FontsDictTypeLegacy(BaseModel):
     fontFamily: str
     imports: str
 
-class ThemeData_DataFieldDictType(BaseModel):
+class ThemeData_DataFieldDictTypeLegacy(BaseModel):
     varColors: dict[str, str]
     classColors: dict[str, str]
-    fonts: ThemeData_FontsDictType
+    fonts: ThemeData_FontsDictTypeLegacy
     otherSettings: dict[str, str]
     backgrounds: dict[str, str]
     twemojiSupport: bool
 
-class ThemeDataDict(BaseModel):
-    data: ThemeData_DataFieldDictType
+class ThemeDataDictLegacy(BaseModel):
+    data: ThemeData_DataFieldDictTypeLegacy
     name: str
     data_version: int
 
+class ThemeDataDict(BaseModel):
+    data: dict[str, dict[str, str]]
+    name: str
+    data_version: int
 
 def is_decodable_json(data: str)-> Any | None:
     try:
@@ -37,9 +41,13 @@ def is_decodable_json(data: str)-> Any | None:
 def is_valid_theme(decoded_json: Any) -> bool:
     try:ThemeDataDict(**decoded_json); return True
     except Exception as e:
-        print("Failed: ", traceback.format_exc())
+        print("Failed v2: ", traceback.format_exc())
         print("Decoded JSON:", decoded_json)
-        return False
+        try: ThemeDataDictLegacy(**decoded_json); return True
+        except Exception as e:
+            print("Failed legacy: ", traceback.format_exc())
+            print("Decoded JSON:", decoded_json)
+            return False
 
 class ThemesManager:
 
