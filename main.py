@@ -17,6 +17,7 @@ from src.httpServer import Flask_HTTPServer
 from src.encryption_tunnel import EncryptionTunnel
 from src.certificate import cert_route
 from src.gambling_provider import GamblingProvider
+from src.assets_provider import provide_assets
 import src.versions as versions
 
 import src.static_pages as static_pages
@@ -122,6 +123,9 @@ class MainApp:
 
         # TOS routes
         self.httpServer.add_route("/terms_of_service", static_pages.tos_page, methods=['GET'])
+
+        # Catch all route
+        self.httpServer.add_route("/<path:path>", provide_assets, methods=['GET'])
 
     def run(self) -> None:
 
